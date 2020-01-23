@@ -2,11 +2,14 @@
 # This file contains configuration flags to customize your site
 #
 
+# use theme from plainwhite-jekyll
+remote_theme: thelehhman/plainwhite-jekyll
+
 # Name of your site (displayed in the header)
-name: Your Name
+name: Irfan Sofyana Putra
 
 # Short bio or description (displayed in the header)
-description: Web Developer from Somewhere
+description: Informatics Engineering Student
 
 # URL of your avatar or profile pic (you could use your GitHub profile pic)
 avatar: https://raw.githubusercontent.com/barryclark/jekyll-now/master/images/jekyll-logo.png
