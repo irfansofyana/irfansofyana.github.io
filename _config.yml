@@ -1,16 +1,41 @@
-name: Jekyll Themes
-url: http://matt.harzewski.com
-description: Insert tagline here
+# Site settings
+title:          Tale
+description:    "Minimal Jekyll theme for storytellers"
+baseurl:        "/tale"
+url:            "https://chesterhow.github.io"
 
-permalink: /themes/:title/
+# Google Analytics
+google_analytics: UA—XXXXXXXX-X
 
-plugins: [jekyll-paginate]
+# Author
+author:
+  name:         Chester How
+  url:          https://chester.how
+  email:        chesterhow@gmail.com
 
-highlighter: pygments
-paginate: 20
+# Build settings
+markdown:       kramdown
+include:
+  - _pages
 
-markdown: rdiscount
-rdiscount:
-    extensions: ['smart']
+# Assets
+sass:
+  sass_dir:     _sass
+  style:        compressed
 
-exclude: ['README.md', 'Gemfile.lock', 'Gemfile', 'Rakefile', 'vendor']
+# Gems
+plugins:
+  - jekyll-feed
+  - jekyll-paginate
+  - jekyll-seo-tag
+  # - jemoji #Uncomment this to allow emoji in your post
+
+# Permalinks
+permalink:      /:year-:month-:day/:title
+paginate:       5
+
+# Excludes
+exclude: [ Gemfile, Gemfile.lock, tale.gemspec ]
+
+# Disqus (Set to your disqus id)
+disqus:         jekyll-tale
