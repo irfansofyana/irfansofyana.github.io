@@ -6,7 +6,7 @@ permalink: /about/
 ---
 
 Hi all! my name is Irfan Sofyana Putra. I live in Bandung, Indonesia.
-I'm an informatics student who loves to learn programming and something new.
+I'm an informatics student who loves to learn programming and learn something new.
 I made this blog for sharing my stories, knowledge, and experiences. So,
 please enjoy the blog.
 
