@@ -53,3 +53,5 @@ theme: plainwhite
 plugins:
   - jekyll-seo-tag
 #  - jekyll-feed
+
+disqus: irfansofyana-github-io-2
