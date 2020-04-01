@@ -3,6 +3,7 @@ layout: post
 title: "Get Everything Done, Do Your Job!"
 author: "Irfan Sofyana"
 comments: "True" 
+tags: random kuliah
 ---
 
 Udah hampir sebulan ga nulis blog. Jadi sekarang kayaknya waktu yang tepat untuk menulis. Dan sepertinya

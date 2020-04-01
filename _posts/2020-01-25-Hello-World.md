@@ -3,6 +3,7 @@ layout: post
 title: "Hello, World!"
 author: "Irfan Sofyana"
 comments: "True" 
+tags: random
 ---
 
 Halo, semuanya!
