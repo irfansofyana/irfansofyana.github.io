@@ -1,9 +1,9 @@
 name = "Irfan Sofyana Putra"
 description = "a software engineer, tech enthusiast, and a hobbyist"
 keywords = "irfan sofyana putra, software engineering, technology"
-image = "irfan.png"
+image = "irfan_2.jpeg"
 theme = "dark"
-primary_color = "#6A1E55"
+primary_color = "#2B3A67"
 text_align = "center"
 gtag_id = ""
 base_url = "https://irfansp.dev"
@@ -43,3 +43,6 @@ url = "https://github.com/irfansofyana"
 [[sections.items]]
 title = "Instagram"
 url = "https://www.instagram.com/irfansofyana/"
+[[sections.items]]
+title = "Facebook"
+url = "https://www.facebook.com/irfan.sofyanaputra/"
