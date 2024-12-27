@@ -7,10 +7,11 @@ primary_color = "#4F46E5"
 text_align = "center"
 gtag_id = "G-FHHLDPRJ98"
 base_url = "https://irfansp.dev"
+copyright_year = "2024"
 
 [[sections]]
-title = "My Second Brain"
-description = "Thoughts and insights"
+title = "Knowledge Hub"
+description = "A growing collection of my thoughts, notes, and discoveries"
 direction = "column"
 item_style = "outline"
 [[sections.items]]
@@ -18,8 +19,8 @@ title = "Digital Garden"
 url = "https://brain.irfansp.dev"
 
 [[sections]]
-title = "Career Journey"
-description = "Exploring my journey"
+title = "Professional Journey"
+description = "Discover my work history, projects, and achievements"
 direction = "column"
 item_style = "outline"
 [[sections.items]]
@@ -27,13 +28,13 @@ title = "Portfolio & Experience"
 url = "https://resume.irfansp.dev"
 
 [[sections]]
-title = "Let's Connect"
-description = "Find me across these platforms"
+title = "Connect With Me"
+description = "Let's Connect and Collaborate!"
 direction = "row"
 item_style = "filled"
 [[sections.items]]
 title = "Email"
-url = "mailto:irfansofyana0305@gmail.com"
+url = "mailto:mail@irfansp.dev"
 [[sections.items]]
 title = "LinkedIn"
 url = "https://www.linkedin.com/in/irfansofyana/"
