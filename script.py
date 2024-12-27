@@ -41,6 +41,7 @@ with open("data.toml", "rb") as f:
 
     meta_tags = frag(
         h("title")(data.get("name")),
+        h("link", rel="icon", type="image/svg+xml", href="img/favicon.svg"),
         h("meta", name="description", content=data.get("description")),
         h("meta", name="keywords", content=data.get("keywords")),
         h("meta", name="viewport", content="width=device-width, initial-scale=1"),
