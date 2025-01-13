@@ -19,6 +19,15 @@ title = "Digital Garden"
 url = "https://brain.irfansp.dev"
 
 [[sections]]
+title = "TIL"
+description = "Things I have learned"
+direction = "column"
+item_style = "outline"
+[[sections.items]]
+title = "My TILs"
+url = "https://til.irfansp.dev"
+
+[[sections]]
 title = "Professional Journey"
 description = "Discover my work history, projects, and achievements"
 direction = "column"
