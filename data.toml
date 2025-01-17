@@ -11,18 +11,12 @@ copyright_year = "2024"
 
 [[sections]]
 title = "Knowledge Hub"
-description = "A growing collection of my thoughts, notes, and discoveries"
+description = "A growing collection of my thoughts, notes, learning, and discoveries"
 direction = "column"
 item_style = "outline"
 [[sections.items]]
-title = "Digital Garden"
+title = "My Second Brain"
 url = "https://brain.irfansp.dev"
-
-[[sections]]
-title = "TIL"
-description = "Things I have learned"
-direction = "column"
-item_style = "outline"
 [[sections.items]]
 title = "My TILs"
 url = "https://til.irfansp.dev"
