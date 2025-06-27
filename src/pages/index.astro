@@ -1,0 +1,29 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Terminal from '../components/Terminal.astro';
+---
+
+<Layout title="Irfan Sofyana Putra">
+  <main>
+    <Terminal />
+  </main>
+</Layout>
+
+<style>
+  main {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
+    padding: 2rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media (max-width: 768px) {
+    main {
+      padding: 1rem 0.5rem;
+      align-items: flex-start;
+    }
+  }
+</style>
+</Layout>
