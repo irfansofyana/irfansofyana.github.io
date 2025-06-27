@@ -1,122 +1,203 @@
-<h1 align="center">
-    <a href="https://github.com/thevahidal/jake">
-        <img src='docs/logo.jpeg' height='200px' style="">
-    </a>
-</h1>
+# Terminal Portfolio Project
 
-<div align="center">
-  Jake is a tool that allows you to effortlessly create your one-link website and deploy it on your GitHub account.
-  <br />
-  <br />
-  <a href="https://thevahidal.github.io/jake">Demo</a>
-  <br />
-  <br />
-  <a href="https://thevahidal.github.io/jake">
-      <img src='docs/demo.gif' style="">
-  </a>
-</div>
+This project is a **Terminal Portfolio** built with Astro. It provides an interactive terminal-like interface where users can navigate, explore various commands, and learn about the developer through a set of predefined commands that open different links and display information.
 
-## Usage
+## 🚀 Project Structure
 
-### 1. Create a Repository
+Inside of your Terminal Portfolio project, you'll see the following folders and files:
 
-To get started, follow these steps to create a new repository using this template:
+```text
+/
+├── public/
+│   ├── favicon.svg
+│   └── profile.svg          # Profile picture
+├── src/
+│   ├── components/
+│   │   └── Terminal.astro   # Main terminal component
+│   ├── data/
+│   │   └── profile.json     # Personal data configuration
+│   ├── layouts/
+│   │   └── Layout.astro     # Base layout
+│   └── pages/
+│       └── index.astro      # Main page
+├── astro.config.mjs
+└── package.json
+```
 
-1. Click [here](https://github.com/new?template_name=jake&template_owner=thevahidal) to create a new repository.
-2. Choose a name for your repository. If you want your website to be deployed at `<yourusername>.github.io`, name your repository `<yourusername>.github.io`. Alternatively, you can choose any other name, such as `that-other-name`, which will result in your website being deployed at `<yourusername>.github.io/that-other-name/`.
+**Key Files to Customize:**
+- `src/data/profile.json` - Your personal information, social links, and bio
+- `src/components/Terminal.astro` - Terminal interface and command logic
+- `public/profile.svg` - Your profile picture
+
+## 🧞 Commands
+
+All commands are run from the root of the project, from a terminal:
+
+| Command                   | Action                                           |
+| :------------------------ | :----------------------------------------------- |
+| `npm install`             | Installs dependencies                            |
+| `npm run dev`             | Starts local dev server at `localhost:4321`      |
+| `npm run build`           | Build your production site to `./dist/`          |
+| `npm run preview`         | Preview your build locally, before deploying     |
+| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
+| `npm run astro -- --help` | Get help using the Astro CLI                     |
+
+## 🔧 Customization Guide
+
+1. **Profile Customization:**
+   - Update `src/data/profile.json` to modify personal details, bio, welcome message, and social links.
+   - Example:
+     ```json
+     {
+       "name": "Your Name",
+       "title": "Your Title",
+       ...
+     }
+     ```
+
+2. **Adding/Editing Commands:**
+   - Modify `src/components/Terminal.astro` to add new commands or change existing ones.
+   - Commands are defined in the JavaScript section near `executeCommand` function.
+
+3. **Styling:**
+   - Customize CSS in `src/components/Terminal.astro` to modify the terminal's appearance.
+   - Styles are defined within `<style>` tags.
+
+4. **Running and Building:**
+   - Use the following npm scripts for development and production:
+     - `npm run dev` - Starts the development server.
+     - `npm run build` - Builds the project for production.
+     - `npm run preview` - Previews the production build.
+
+## 🌐 GitHub Pages Deployment
+
+This project is configured to deploy automatically to GitHub Pages. To set up deployment for your own repository:
+
+### 1. Update astro.config.mjs
+
+Modify the `astro.config.mjs` file with your GitHub username and repository name:
+
+```javascript
+// @ts-check
+import { defineConfig } from 'astro/config';
+
+// https://astro.build/config
+export default defineConfig({
+  site: 'https://YOUR_GITHUB_USERNAME.github.io',
+  base: '/YOUR_REPOSITORY_NAME',
+  build: {
+    assets: 'assets'
+  }
+});
+```
+
+**Replace:**
+- `YOUR_GITHUB_USERNAME` with your actual GitHub username
+- `YOUR_REPOSITORY_NAME` with your repository name
+
+**Example:**
+```javascript
+export default defineConfig({
+  site: 'https://johndoe.github.io',
+  base: '/my-terminal-portfolio',
+  // ...
+});
+```
 
 ### 2. Enable GitHub Pages
 
-After creating the repository, you need to enable GitHub Pages. Follow these steps:
+1. Go to your repository on GitHub
+2. Click on **Settings** tab
+3. Scroll down to **Pages** section
+4. Under **Source**, select **GitHub Actions**
+5. The deployment workflow is already configured in `.github/workflows/deploy.yml`
 
-1. Go to your repository's `Settings` tab.
-2. Navigate to the `Pages` section.
-3. Choose `GitHub Actions` as the source for your GitHub Pages.
-4. Click `Save` to apply the changes.
+### 3. Deploy
 
-### 3. Add your data
+- **Automatic:** Push to the `main` branch triggers automatic deployment
+- **Manual:** Go to **Actions** tab and run the "Deploy to GitHub Pages" workflow manually
 
-To customize your website, follow these steps:
+### 4. Access Your Site
 
-1. Open your repository in your preferred text editor.
-2. Locate the `data.toml` file and update it with your information.
+Once deployed, your site will be available at:
+```
+https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPOSITORY_NAME
+```
 
-<details>
-<summary>Click to <b>Learn</b> all the available settings here</summary>
+**Note:** The first deployment may take a few minutes. Check the **Actions** tab for deployment status.
 
-#### General Information
+### 5. Custom Domain Setup (Optional)
 
-- `name`: Your name (e.g., "Vahid Al")
-- `description`: A brief bio about yourself (e.g., "Software Developer and passionate about creating things")
-- `keywords`: Keywords for the keywords meta tag (e.g., "python, javascript, go")
-- `image`: The file address of your avatar. Place your avatar inside the `dist/img/` folder (e.g., "me.jpeg" - Note that the `/dist/img/` address is not included)
-- `theme`: Choose your website theme: "dark" or "light" (e.g., "dark")
-- `primary_color`: Specify your website's primary color using a hexadecimal color code (e.g., "#00897b")
-- `text_align`: Specify the text alignment for your website: "right", "left" or "center" (e.g., "center")
-- `gtag_id`: Your Google Analytics tracking ID (e.g., "G-33WB8LVHR6")
-- `base_url`: The base URL for your website, mentioned in **1. Create a Repository** step (e.g., <https://thevahidal.github.io/jake>)
+If you want to use your own custom domain instead of the default GitHub Pages URL:
 
-#### Sections
+#### A. Update astro.config.mjs for Custom Domain
 
-You can add multiple sections based on your requirements.
-For example, you may want a section for your projects, another for your social media links, and another for your merchandise products.
+```javascript
+// @ts-check
+import { defineConfig } from 'astro/config';
 
-Each section is defined using `[[sections]]` and has the following components:
+// https://astro.build/config
+export default defineConfig({
+  site: 'https://yourdomain.com',  // Your custom domain
+  base: '/',                       // Root path for custom domain
+  build: {
+    assets: 'assets'
+  }
+});
+```
 
-- `title`: The title of the section (e.g., "Projects")
-- `description`: A brief description of the section (e.g., "Here are some of my projects")
-- `direction`: The direction of the section: "row" or "column" (e.g., "row")
-- `item_style`: The style of the items in the section: "outline" or "filled" (e.g., "outline")
-- `items`: The items associated with the section.
+#### B. Configure DNS Settings
 
-#### Items
+In your domain registrar's DNS settings, add these records:
 
-Each item is defined using `[[sections.items]]` and has the following components:
+**For Apex Domain (yourdomain.com):**
+```
+Type: A
+Name: @
+Value: 185.199.108.153
 
-- `title`: The title of the item (e.g., "Soul")
-- `description`: A brief description of the item (e.g., "An SQLite REST and Real-time server")
-- `url`: The URL associated with the item (e.g., "<https://github.com/thevahidal/soul>")
+Type: A
+Name: @
+Value: 185.199.109.153
 
-</details>
+Type: A
+Name: @
+Value: 185.199.110.153
 
-### 4. Voila
+Type: A
+Name: @
+Value: 185.199.111.153
+```
 
-That's all you need to do. Now, you can sit back and relax while your website gets deployed. You can monitor the progress in the `Actions` tab of your repository. Once the deployment is complete, you can access your brand new one-link website at `<yourusername>.github.io` (If you chose `<yourusername>.github.io` as your repository name) or `<yourusername>.github.io/repo-name/`.
+**For Subdomain (www.yourdomain.com):**
+```
+Type: CNAME
+Name: www
+Value: YOUR_GITHUB_USERNAME.github.io
+```
 
-### FAQ
+#### C. Add CNAME File
 
-<details>
-<summary>1. How to configure my own <b>Custom Domain</b>?</summary>
+Create a `CNAME` file in the `public/` directory:
 
-If you want to use your custom domain for your website hosted on GitHub Pages, it's a straightforward process. Just follow these steps:
+```bash
+echo "yourdomain.com" > public/CNAME
+```
 
-1. Go to the **Settings** tab of your GitHub repository.
-2. Select **Pages** tab in the sidebar.
-3. Under the **Custom domain** section, enter your desired domain name.
-4. Click **Save**.
+#### D. Enable Custom Domain in GitHub
 
-That's it! Your GitHub Pages site will now be accessible using your custom domain.
+1. Go to your repository **Settings** → **Pages**
+2. Under **Custom domain**, enter your domain name
+3. Check **Enforce HTTPS** (recommended)
+4. Save the settings
 
-For more detailed instructions and information on using a custom domain with GitHub Pages, you can refer to the [official GitHub Docs](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site).
+#### E. Verify Domain
 
-</details>
+- DNS propagation can take up to 24-48 hours
+- Check your domain status in GitHub Pages settings
+- Your site will be accessible at `https://yourdomain.com`
 
-<details>
-<summary>2. How to <b>manually</b> trigger the GitHub Action to deploy my website?</summary>
-
-1. In your repository, navigate to the "Actions" tab.
-2. Look for the workflow named "Deploy Jake Website to GitHub Pages" in the list of workflows.
-3. If you see an alert stating "This workflow has a workflow_dispatch event trigger," it means you can manually trigger the workflow.
-4. Click on the "Run Workflow" button. A new window will appear.
-5. Within the new window, click on the green "Run Workflow" button.
-6. GitHub Actions will initiate the deployment process for your static content to GitHub Pages.
-
-</details>
-
-## Contributing
-
-If you find any issues or have suggestions for improvement, please feel free to contribute by submitting a pull request or creating an issue in the repository.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
+**Important Notes:**
+- Replace `yourdomain.com` with your actual domain
+- Replace `YOUR_GITHUB_USERNAME` with your GitHub username
+- The `CNAME` file will be included in your build and deployment

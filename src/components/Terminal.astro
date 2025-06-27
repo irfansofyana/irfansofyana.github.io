@@ -1,0 +1,786 @@
+---
+// Import profile data from JSON file
+import profileData from '../data/profile.json';
+
+// Create a profile object from the imported data
+const profile = profileData;
+
+// Use the base path from the config
+import baseConfig from '../../astro.config.mjs';
+
+// Construct the full path for the profile picture
+let profilePicturePath = profile.profile_picture;
+if (baseConfig.base !== '/') {
+  profilePicturePath = `${baseConfig.base}/${profile.profile_picture}`;
+}
+---
+
+<script id="profile-data" type="application/json" set:html={JSON.stringify(profile)}></script>
+
+<div class="terminal-container">
+  <div class="terminal-header">
+    <div class="terminal-controls">
+      <div class="control close"></div>
+      <div class="control minimize"></div>
+      <div class="control maximize"></div>
+    </div>
+    <div class="terminal-title">terminal</div>
+  </div>
+  
+  <div class="terminal-body">
+    <div class="terminal-content" id="terminal-content">
+      <!-- Welcome Message -->
+      <div class="terminal-line">
+        <span class="terminal-prompt">{profile.prompt}</span>
+        <span class="terminal-command typing-animation">whoami</span>
+      </div>
+      
+      <div class="terminal-output">
+        <img 
+          src={profilePicturePath} 
+          alt="Profile Picture" 
+          class="profile-picture" 
+          onerror="this.style.display='none'; console.log('Profile picture failed to load:', this.src);"
+          onload="console.log('Profile picture loaded successfully:', this.src);"
+        />
+        <div class="welcome-message">{profile.welcome_message}</div>
+        <div class="name">{profile.name}</div>
+        <div class="title">{profile.title}</div>
+        <div class="bio">{profile.bio}</div>
+      </div>
+
+      <!-- Available Commands -->
+      <div class="terminal-line">
+        <span class="terminal-prompt">{profile.prompt}</span>
+        <span class="terminal-command">help</span>
+      </div>
+      
+      <div class="terminal-output">
+        <div class="command-list">
+          <div class="command-header">Available Commands:</div>
+          {profile.social_links.map((link) => (
+            <div class="command-item">
+              <span class="command-name">{link.command}</span>
+              <span class="command-description">{link.description}</span>
+            </div>
+          ))}
+          <div class="command-item">
+            <span class="command-name">about</span>
+            <span class="command-description">Display detailed information about me</span>
+          </div>
+          <div class="command-item">
+            <span class="command-name">skills</span>
+            <span class="command-description">Show my technical skills</span>
+          </div>
+          <div class="command-item">
+            <span class="command-name">clear</span>
+            <span class="command-description">Clear the terminal screen</span>
+          </div>
+          <div class="command-item">
+            <span class="command-name">whoami</span>
+            <span class="command-description">Display user information</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Prompt -->
+      <div class="terminal-line interactive-line" id="input-line">
+        <span class="terminal-prompt">{profile.prompt}</span>
+        <input 
+          type="text" 
+          id="terminal-input" 
+          class="terminal-input" 
+          autocomplete="off" 
+          spellcheck="false"
+          placeholder="Type a command..."
+        />
+        <span class="terminal-cursor">_</span>
+      </div>
+      
+      <div class="footer-text">{profile.footer_text}</div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .terminal-container {
+    background: #1a1a1a;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    max-width: 900px;
+    margin: 2rem auto;
+    font-family: 'Fira Code', 'Monaco', 'Menlo', monospace;
+    overflow: hidden;
+  }
+
+  .terminal-header {
+    background: #2d2d2d;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #444;
+  }
+
+  .terminal-controls {
+    display: flex;
+    gap: 8px;
+  }
+
+  .control {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .close { background: #ff5f57; }
+  .minimize { background: #ffbd2e; }
+  .maximize { background: #28ca42; }
+
+  .terminal-title {
+    color: #999;
+    font-size: 14px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .terminal-body {
+    background: #000;
+    color: #00ff00;
+    padding: 20px;
+    min-height: 500px;
+    font-size: 14px;
+    line-height: 1.5;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  .terminal-line {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+  }
+
+  .terminal-prompt {
+    color: #00ff00;
+    font-weight: bold;
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+
+  .terminal-command {
+    color: #fff;
+  }
+
+  .terminal-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-family: inherit;
+    font-size: inherit;
+    flex: 1;
+    padding: 0;
+    margin: 0;
+  }
+
+  .terminal-input::placeholder {
+    color: #666;
+  }
+
+  .terminal-output {
+    padding: 12px;
+    margin-bottom: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    border-left: 3px solid #4d4d4d;
+  }
+
+  .welcome-message {
+    color: #00ff00;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+
+  .name {
+    color: #fff;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+
+  .title {
+    color: #ffd700;
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  .bio {
+    color: #ccc;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .command-list {
+    margin-bottom: 16px;
+  }
+
+  .command-header {
+    color: #0c8;
+    font-weight: bold;
+    margin-bottom: 12px;
+    font-size: 1.1em;
+  }
+
+  .command-item {
+    margin-bottom: 12px;
+    padding: 6px;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+
+  .command-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .command-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .command-name {
+    color: #f80;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(255, 136, 0, 0.1);
+  }
+
+  .command-name:hover {
+    background: rgba(255, 136, 0, 0.2);
+  }
+
+  .command-description {
+    color: #ccc;
+  }
+  
+  .command-usage {
+    color: #999;
+    font-size: 0.9em;
+    margin-left: 20px;
+  }
+  
+  .command-usage code {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+    color: #0c8;
+  }
+  
+  .help-container {
+    font-family: monospace;
+    padding: 5px 0;
+  }
+  
+  .help-title {
+    color: #0f0;
+    text-align: center;
+    margin-bottom: 15px;
+    margin-top: 5px;
+    font-weight: bold;
+    font-size: 1.1em;
+    border-bottom: 1px solid #0f0;
+    padding-bottom: 8px;
+  }
+  
+  .help-section {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    padding-left: 10px;
+  }
+  
+  .help-section:last-of-type {
+    margin-bottom: 10px;
+  }
+  
+  .help-header {
+    color: #0f0;
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 1em;
+    padding-left: 5px;
+  }
+  
+  .help-command {
+    margin: 5px 0;
+    padding-left: 15px;
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  
+  .command-icon {
+    color: #0f0;
+    margin-right: 8px;
+    font-size: 0.9em;
+  }
+  
+  .command-name {
+    color: #0f0;
+    cursor: pointer;
+    font-weight: bold;
+    display: inline-block;
+    min-width: 80px;
+    margin-right: 5px;
+  }
+  
+  .command-name:hover {
+    text-decoration: underline;
+  }
+  
+  .command-separator {
+    color: #0f0;
+    margin-right: 5px;
+  }
+  
+  .command-desc {
+    color: #ccc;
+  }
+  
+  .command-url {
+    color: #888;
+    font-style: italic;
+  }
+
+  .links-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .terminal-link {
+    display: flex;
+    align-items: center;
+    color: #00ff00;
+    text-decoration: none;
+    padding: 8px 12px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    background: rgba(0, 255, 0, 0.05);
+  }
+
+  .terminal-link:hover {
+    background: rgba(0, 255, 0, 0.1);
+    border-color: #00ff00;
+    transform: translateX(4px);
+  }
+
+  .link-command {
+    color: #ffd700;
+    font-weight: bold;
+    width: 100px;
+  }
+
+  .link-arrow {
+    color: #00ff00;
+    margin: 0 12px;
+  }
+
+  .link-label {
+    color: #fff;
+  }
+
+  .interactive-line {
+    margin-top: 32px;
+    position: sticky;
+    bottom: 0;
+    background: #000;
+    padding: 8px 0;
+  }
+
+  .terminal-cursor {
+    color: #00ff00;
+    animation: blink 1s infinite;
+    margin-left: 4px;
+  }
+
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  .typing-animation {
+    overflow: hidden;
+    border-right: 2px solid #00ff00;
+    white-space: nowrap;
+    animation: typing 2s steps(6, end), blink-caret 0.75s step-end infinite;
+  }
+
+  @keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+
+  @keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: #00ff00; }
+  }
+
+  .footer-text {
+    color: #666;
+    font-size: 12px;
+    margin-top: 32px;
+    text-align: center;
+  }
+
+  .error-message {
+    color: #ff6b6b;
+    margin: 8px 0;
+  }
+
+  .success-message {
+    color: #00ff00;
+    margin: 8px 0;
+  }
+
+  .terminal-url-link {
+    color: #00bfff;
+    text-decoration: underline;
+    transition: color 0.2s ease;
+  }
+
+  .terminal-url-link:hover {
+    color: #66d9ff;
+    text-decoration: underline;
+  }
+
+  .profile-picture {
+    max-width: 120px;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+    margin: 0 auto 20px;
+    border: 3px solid #00ff00;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .profile-picture:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .terminal-container {
+      margin: 1rem;
+      border-radius: 4px;
+    }
+
+    .terminal-body {
+      padding: 16px;
+      font-size: 13px;
+    }
+
+    .command-item {
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .command-name {
+      width: auto;
+    }
+
+    .terminal-link {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    .link-command {
+      width: auto;
+    }
+
+    .link-arrow {
+      margin: 0;
+    }
+
+    .profile-picture {
+      max-width: 100px;
+      width: 100px;
+      height: 100px;
+    }
+  }
+
+  /* Accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .typing-animation {
+      animation: none;
+      border-right: none;
+    }
+    
+    .terminal-cursor {
+      animation: none;
+    }
+    
+    .terminal-link {
+      transition: none;
+    }
+  }
+
+  /* High contrast mode */
+  @media (prefers-contrast: high) {
+    .terminal-container {
+      border: 2px solid #fff;
+    }
+    
+    .terminal-link {
+      border-color: #fff;
+    }
+  }
+</style>
+
+<script>
+  // Import profile data from JSON file
+  const profileDataElement = document.getElementById('profile-data');
+  const profileData = profileDataElement ? JSON.parse(profileDataElement.textContent || '{}') : {};
+
+  // Command history
+  let commandHistory = [];
+  let historyIndex = -1;
+
+  // Get terminal elements
+  const terminalInput = document.getElementById('terminal-input');
+  const terminalContent = document.getElementById('terminal-content');
+  const inputLine = document.getElementById('input-line');
+
+  // Focus input on page load and when clicking anywhere in terminal
+  document.addEventListener('DOMContentLoaded', () => {
+    terminalInput?.focus();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.terminal-container')) {
+      terminalInput?.focus();
+    }
+  });
+
+  // Handle command input
+  terminalInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const command = terminalInput.value.trim().toLowerCase();
+      if (command) {
+        executeCommand(command);
+        commandHistory.unshift(command);
+        historyIndex = -1;
+      }
+      terminalInput.value = '';
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (historyIndex < commandHistory.length - 1) {
+        historyIndex++;
+        terminalInput.value = commandHistory[historyIndex];
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (historyIndex > 0) {
+        historyIndex--;
+        terminalInput.value = commandHistory[historyIndex];
+      } else if (historyIndex === 0) {
+        historyIndex = -1;
+        terminalInput.value = '';
+      }
+    }
+  });
+
+  // Execute commands
+  function executeCommand(command: string) {
+    // Add command to terminal
+    addToTerminal(`<div class="terminal-line">
+      <span class="terminal-prompt">${profileData.prompt}</span>
+      <span class="terminal-command">${command}</span>
+    </div>`);
+
+    // Process command
+    switch (command) {
+      case 'help':
+        showHelp();
+        break;
+      case 'about':
+        showAbout();
+        break;
+      case 'whoami':
+        showWhoami();
+        break;
+      case 'skills':
+        showSkills();
+        break;
+      case 'clear':
+        clearTerminal();
+        return;
+      case 'github':
+      case 'linkedin':
+      case 'resume':
+      case 'brain':
+      case 'til':
+      case 'instagram':
+        openLink(command);
+        break;
+      default:
+        showError(command);
+    }
+
+    scrollToBottom();
+  }
+
+  function addToTerminal(html: string) {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    inputLine.parentNode?.insertBefore(div.firstElementChild, inputLine);
+  }
+
+  function showHelp() {
+    // Create social links HTML dynamically
+    const socialLinksHTML = profileData.social_links ? profileData.social_links.map((link: { command: string, label: string, url: string }) => {
+      return `<div class="help-command"><span class="command-icon">→</span><span class="command-name">${link.command}</span><span class="command-separator">:</span> <span class="command-desc">Open ${link.label}</span> <span class="command-url">(${link.url})</span></div>`;
+    }).join('') : '';
+
+    const helpText = `
+      <div class="terminal-output help-container">
+        <div class="help-title">TERMINAL HELP</div>
+        
+        <div class="help-section">
+          <div class="help-header">⚡ Information Commands</div>
+          <div class="help-command"><span class="command-icon">→</span><span class="command-name">about</span><span class="command-separator">:</span> <span class="command-desc">Display detailed information about me</span></div>
+          <div class="help-command"><span class="command-icon">→</span><span class="command-name">whoami</span><span class="command-separator">:</span> <span class="command-desc">Display user information</span></div>
+          <div class="help-command"><span class="command-icon">→</span><span class="command-name">skills</span><span class="command-separator">:</span> <span class="command-desc">Show my technical skills</span></div>
+        </div>
+        
+        <div class="help-section">
+          <div class="help-header">🔗 External Links</div>
+          ${socialLinksHTML}
+        </div>
+        
+        <div class="help-section">
+          <div class="help-header">⌨️ Terminal Controls</div>
+          <div class="help-command"><span class="command-icon">→</span><span class="command-name">clear</span><span class="command-separator">:</span> <span class="command-desc">Clear the terminal screen</span></div>
+          <div class="help-command"><span class="command-icon">→</span><span class="command-name">help</span><span class="command-separator">:</span> <span class="command-desc">Display this help menu</span></div>
+        </div>
+        
+        <div class="help-section">
+          <div class="help-header">🔤 Keyboard Shortcuts</div>
+          <div class="help-command"><span class="command-icon">→</span><span>↑/↓</span><span class="command-separator">:</span> <span class="command-desc">Navigate command history</span></div>
+          <div class="help-command"><span class="command-icon">→</span><span>Tab</span><span class="command-separator">:</span> <span class="command-desc">Enable keyboard navigation</span></div>
+        </div>
+      </div>`;
+
+    addToTerminal(helpText);
+  }
+
+  function showAbout() {
+    const aboutText = `
+      <div class="terminal-output">
+        <div class="name">${profileData.name}</div>
+        <div class="title">${profileData.title}</div>
+        <div class="bio">${profileData.bio}</div>
+        <div style="margin-top: 16px; color: #ccc;">
+          ${profileData.about_extended}
+        </div>
+      </div>
+    `;
+    addToTerminal(aboutText);
+  }
+
+  function showWhoami() {
+    const whoamiText = `
+      <div class="terminal-output">
+        <div class="success-message">User: ${profileData.name}</div>
+        <div style="color: #ccc;">Role: ${profileData.title}</div>
+        <div style="color: #ccc;">Status: ${profileData.whoami_info.status}</div>
+        <div style="color: #ccc;">Location: ${profileData.whoami_info.location}</div>
+      </div>
+    `;
+    addToTerminal(whoamiText);
+  }
+
+  function showSkills() {
+    const skillsText = `
+      <div class="terminal-output">
+        <div class="command-header">Technical Skills:</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-top: 12px;">
+          ${profileData.skills.map((skill: string) => `
+            <div style="color: #ffd700; padding: 4px 8px; background: rgba(255, 215, 0, 0.1); border-radius: 4px;">
+              ${skill}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    addToTerminal(skillsText);
+  }
+
+  function openLink(command: string) {
+    const link = profileData.social_links.find((l: { command: string }) => l.command === command);
+    if (link) {
+      addToTerminal(`
+        <div class="terminal-output">
+          <div class="success-message">Opening ${link.label}...</div>
+          <div style="color: #ccc; margin-top: 8px;">Please go to <a href="${link.url}" target="_blank" class="terminal-url-link">${link.url}</a> if it doesn't open automatically.</div>
+        </div>
+      `);
+      setTimeout(() => {
+        window.open(link.url, '_blank');
+      }, 500);
+    }
+  }
+
+  function showError(command: string) {
+    addToTerminal(`
+      <div class="terminal-output">
+        <div class="error-message">Command not found: ${command}</div>
+        <div style="color: #ccc; margin-top: 8px;">Type 'help' to see available commands.</div>
+      </div>
+    `);
+  }
+
+  function clearTerminal() {
+    // Remove all content except the input line
+    const children = Array.from(terminalContent.children);
+    children.forEach(child => {
+      if (child.id !== 'input-line' && !child.classList.contains('footer-text')) {
+        child.remove();
+      }
+    });
+  }
+
+  function scrollToBottom() {
+    terminalContent.scrollTop = terminalContent.scrollHeight;
+  }
+
+  // Add keyboard navigation for existing command names
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      const links = document.querySelectorAll('.terminal-link');
+      links.forEach(link => {
+        link.setAttribute('tabindex', '0');
+      });
+    }
+  });
+
+  // Add click-to-copy functionality for commands
+  document.querySelectorAll('.command-name').forEach((cmd: Element) => {
+    cmd.addEventListener('click', () => {
+      const command = cmd.textContent;
+      if (command && terminalInput) {
+        terminalInput.value = command;
+        terminalInput.focus();
+      }
+    });
+  });
+</script>
