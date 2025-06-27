@@ -1,20 +1,18 @@
 {
   "name": "Irfan Sofyana Putra",
-  "title": "Software Engineer",
-  "bio": "Welcome! I'm a software engineer from Indonesia focused on AI, Backend Engineering, and Infrastructure. Feel free to explore my work and projects.",
+  "title": "Software Engineer • Tech Enthusiast",
+  "bio": "Hi there! 👋 I'm a software engineer from Indonesia who loves AI, Backend Engineering, and Infrastructure. I enjoy building useful code and learning about new tech. Type a command below to see my work and learn more about me!",
+  "contact": {
+    "email": "mail@irfansp.dev",
+    "show_in_welcome": true
+  },
   "prompt": "visitor@irfansp.dev:~$",
-  "welcome_message": "Welcome to Irfan's Terminal",
+  "welcome_message": "",
   "profile_picture": "ss.png",
   "social_links": [
     {
-      "label": "GitHub 🚀",
-      "url": "https://github.com/irfansofyana",
-      "command": "github",
-      "description": "Explore my code repositories and open source contributions"
-    },
-    {
       "label": "Resume 📄",
-      "url": "https://resume.irfansp.dev", 
+      "url": "https://resume.irfansp.dev",
       "command": "resume",
       "description": "Check out my professional experience and qualifications"
     },
@@ -31,7 +29,13 @@
       "description": "Discover interesting things I learn every day in tech and beyond"
     },
     {
-      "label": "LinkedIn 💼", 
+      "label": "GitHub 🚀",
+      "url": "https://github.com/irfansofyana",
+      "command": "github",
+      "description": "Explore my code repositories and open source contributions"
+    },
+    {
+      "label": "LinkedIn 💼",
       "url": "https://linkedin.com/in/irfansofyana",
       "command": "linkedin",
       "description": "Let's connect professionally and explore opportunities together"
@@ -43,7 +47,18 @@
       "description": "Get a glimpse of my life outside the terminal"
     }
   ],
-  "skills": ["Go", "Javascript", "Node.js", "Python", "Docker", "AWS", "SQL", "Terraform", "Kubernetes", "CI/CD"],
+  "skills": [
+    "Go",
+    "Javascript",
+    "Node.js",
+    "Python",
+    "Docker",
+    "AWS",
+    "SQL",
+    "Terraform",
+    "Kubernetes",
+    "CI/CD"
+  ],
   "footer_text": "Type 'help' for available commands",
   "about_extended": "I've had the opportunity to work in the payment and banking domains, where I've focused on building reliable and scalable solutions. With a B.Sc. in Informatics from Institut Teknologi Bandung (ITB), I enjoy solving complex problems and adapting to new challenges while keeping customer needs at the center of my work. I'm comfortable taking initiative when needed and collaborating with teams to help bring technology projects to completion across various domains.",
   "whoami_info": {

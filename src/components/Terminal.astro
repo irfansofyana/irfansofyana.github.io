@@ -43,10 +43,18 @@ if (baseConfig.base !== '/') {
           onerror="this.style.display='none'; console.log('Profile picture failed to load:', this.src);"
           onload="console.log('Profile picture loaded successfully:', this.src);"
         />
-        <div class="welcome-message">{profile.welcome_message}</div>
+        {profile.welcome_message && profile.welcome_message.trim() !== '' && (
+          <div class="welcome-message">{profile.welcome_message}</div>
+        )}
         <div class="name">{profile.name}</div>
         <div class="title">{profile.title}</div>
         <div class="bio">{profile.bio}</div>
+        {profile.contact && profile.contact.show_in_welcome && (
+          <div class="contact-info">
+            <div class="contact-label">📧 Contact:</div>
+            <a href={`mailto:${profile.contact.email}`} class="contact-email">{profile.contact.email}</a>
+          </div>
+        )}
       </div>
 
       <!-- Available Commands -->
@@ -219,6 +227,41 @@ if (baseConfig.base !== '/') {
     color: #ccc;
     line-height: 1.6;
     margin-bottom: 16px;
+  }
+
+  .contact-info {
+    margin-top: 16px;
+    padding: 12px;
+    background: rgba(0, 255, 0, 0.05);
+    border-left: 3px solid #00ff00;
+    border-radius: 4px;
+  }
+
+  .contact-label {
+    color: #00ff00;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  .contact-email {
+    color: #ffd700;
+    font-family: monospace;
+    font-size: 14px;
+    background: rgba(255, 215, 0, 0.1);
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .contact-email:hover {
+    background: rgba(255, 215, 0, 0.2);
+    color: #fff;
+    text-decoration: underline;
+    transform: translateY(-1px);
   }
 
   .command-list {
