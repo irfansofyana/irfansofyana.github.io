@@ -6,7 +6,7 @@
     "email": "mail@irfansp.dev",
     "show_in_welcome": true
   },
-  "prompt": "visitor@irfansp.dev:~$",
+  "prompt": "irfan@irfansp.dev:~$",
   "welcome_message": "",
   "profile_picture": "ss.png",
   "social_links": [
@@ -27,6 +27,12 @@
       "url": "https://til.irfansp.dev",
       "command": "til",
       "description": "Discover interesting things I learn every day in tech and beyond"
+    },
+    {
+      "label": "Developer Tools 🛠️",
+      "url": "https://devtools.irfansp.dev",
+      "command": "devtools",
+      "description": "Access a collection of useful web-based tools for developers"
     },
     {
       "label": "GitHub 🚀",
