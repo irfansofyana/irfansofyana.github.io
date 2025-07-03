@@ -115,8 +115,8 @@ if (baseConfig.base !== '/') {
     background: #1a1a1a;
     border-radius: 8px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-    max-width: 900px;
-    width: 900px;
+    max-width: 1100px;
+    width: 1100px;
     margin: 0 auto;
     font-family: 'Fira Code', 'Monaco', 'Menlo', monospace;
     overflow: hidden;
@@ -156,12 +156,20 @@ if (baseConfig.base !== '/') {
     background: #000;
     color: #00ff00;
     padding: 20px;
-    height: 600px;
-    min-height: 600px;
+    height: 700px;
+    min-height: 700px;
+    max-height: 700px;
     font-size: 14px;
     line-height: 1.5;
-    max-height: 75vh;
     overflow-y: auto;
+    box-sizing: border-box;
+  }
+
+  .terminal-content {
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
   }
 
   .terminal-line {
@@ -479,6 +487,7 @@ if (baseConfig.base !== '/') {
     text-align: center;
   }
 
+
   .error-message {
     color: #ff6b6b;
     margin: 8px 0;
@@ -501,9 +510,9 @@ if (baseConfig.base !== '/') {
   }
 
   .profile-picture {
-    max-width: 120px;
-    width: 120px;
-    height: 120px;
+    max-width: 150px;
+    width: 150px;
+    height: 150px;
     object-fit: cover;
     border-radius: 50%;
     display: block;
@@ -521,14 +530,14 @@ if (baseConfig.base !== '/') {
   /* Responsive Design */
   @media (max-width: 1200px) {
     .terminal-container {
-      width: auto;
-      max-width: 95vw;
+      width: 95vw;
+      max-width: 1100px;
     }
   }
 
   @media (max-width: 968px) {
     .terminal-container {
-      width: auto;
+      width: 90vw;
       max-width: 90vw;
       margin: 1rem;
       border-radius: 4px;
@@ -537,9 +546,9 @@ if (baseConfig.base !== '/') {
     .terminal-body {
       padding: 16px;
       font-size: 13px;
-      height: 550px;
-      min-height: 550px;
-      max-height: 80vh;
+      height: 650px;
+      min-height: 650px;
+      max-height: 650px;
     }
   }
 
@@ -567,9 +576,9 @@ if (baseConfig.base !== '/') {
     }
 
     .profile-picture {
-      max-width: 100px;
-      width: 100px;
-      height: 100px;
+      max-width: 120px;
+      width: 120px;
+      height: 120px;
     }
   }
 
@@ -682,6 +691,7 @@ if (baseConfig.base !== '/') {
       case 'resume':
       case 'brain':
       case 'til':
+      case 'devtools':
       case 'instagram':
         openLink(command);
         break;
@@ -803,7 +813,7 @@ if (baseConfig.base !== '/') {
   }
 
   function clearTerminal() {
-    // Remove all content except the input line
+    // Remove all content except the input line and footer
     const children = Array.from(terminalContent.children);
     children.forEach(child => {
       if (child.id !== 'input-line' && !child.classList.contains('footer-text')) {
