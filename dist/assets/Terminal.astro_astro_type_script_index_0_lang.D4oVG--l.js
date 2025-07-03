@@ -1,7 +1,7 @@
-const d=document.getElementById("profile-data"),n=d?JSON.parse(d.textContent||"{}"):{};let l=[],c=-1;const e=document.getElementById("terminal-input"),t=document.getElementById("terminal-content"),m=document.getElementById("input-line");document.addEventListener("DOMContentLoaded",()=>{e?.focus()});document.addEventListener("click",a=>{a.target.closest(".terminal-container")&&e?.focus()});e?.addEventListener("keydown",a=>{if(a.key==="Enter"){const s=e.value.trim().toLowerCase();s&&(p(s),l.unshift(s),c=-1),e.value=""}else a.key==="ArrowUp"?(a.preventDefault(),c<l.length-1&&(c++,e.value=l[c])):a.key==="ArrowDown"&&(a.preventDefault(),c>0?(c--,e.value=l[c]):c===0&&(c=-1,e.value=""))});function p(a){switch(o(`<div class="terminal-line">
+const d=document.getElementById("profile-data"),n=d?JSON.parse(d.textContent||"{}"):{};let l=[],i=-1;const e=document.getElementById("terminal-input"),t=document.getElementById("terminal-content"),m=document.getElementById("input-line");document.addEventListener("DOMContentLoaded",()=>{e?.focus()});document.addEventListener("click",a=>{a.target.closest(".terminal-container")&&e?.focus()});e?.addEventListener("keydown",a=>{if(a.key==="Enter"){const s=e.value.trim().toLowerCase();s&&(p(s),l.unshift(s),i=-1),e.value=""}else a.key==="ArrowUp"?(a.preventDefault(),i<l.length-1&&(i++,e.value=l[i])):a.key==="ArrowDown"&&(a.preventDefault(),i>0?(i--,e.value=l[i]):i===0&&(i=-1,e.value=""))});function p(a){switch(o(`<div class="terminal-line">
       <span class="terminal-prompt">${n.prompt}</span>
       <span class="terminal-command">${a}</span>
-    </div>`),a){case"help":r();break;case"about":v();break;case"whoami":u();break;case"skills":h();break;case"clear":y();return;case"github":case"linkedin":case"resume":case"portfolio":case"blog":case"twitter":f(a);break;default:k(a)}b()}function o(a){const s=document.createElement("div");s.innerHTML=a,m.parentNode?.insertBefore(s.firstElementChild,m)}function r(){const s=`
+    </div>`),a){case"help":r();break;case"about":v();break;case"whoami":u();break;case"skills":h();break;case"clear":y();return;case"github":case"linkedin":case"resume":case"brain":case"til":case"instagram":f(a);break;default:k(a)}b()}function o(a){const s=document.createElement("div");s.innerHTML=a,m.parentNode?.insertBefore(s.firstElementChild,m)}function r(){const s=`
       <div class="terminal-output help-container">
         <div class="help-title">TERMINAL HELP</div>
         
@@ -14,7 +14,7 @@ const d=document.getElementById("profile-data"),n=d?JSON.parse(d.textContent||"{
         
         <div class="help-section">
           <div class="help-header">🔗 External Links</div>
-          ${n.social_links?n.social_links.map(i=>`<div class="help-command"><span class="command-icon">→</span><span class="command-name">${i.command}</span><span class="command-separator">:</span> <span class="command-desc">Open ${i.label}</span> <span class="command-url">(${i.url})</span></div>`).join(""):""}
+          ${n.social_links?n.social_links.map(c=>`<div class="help-command"><span class="command-icon">→</span><span class="command-name">${c.command}</span><span class="command-separator">:</span> <span class="command-desc">Open ${c.label}</span> <span class="command-url">(${c.url})</span></div>`).join(""):""}
         </div>
         
         <div class="help-section">
@@ -55,7 +55,7 @@ const d=document.getElementById("profile-data"),n=d?JSON.parse(d.textContent||"{
           `).join("")}
         </div>
       </div>
-    `;o(a)}function f(a){const s=n.social_links.find(i=>i.command===a);s&&(o(`
+    `;o(a)}function f(a){const s=n.social_links.find(c=>c.command===a);s&&(o(`
         <div class="terminal-output">
           <div class="success-message">Opening ${s.label}...</div>
           <div style="color: #ccc; margin-top: 8px;">Please go to <a href="${s.url}" target="_blank" class="terminal-url-link">${s.url}</a> if it doesn't open automatically.</div>
@@ -65,4 +65,4 @@ const d=document.getElementById("profile-data"),n=d?JSON.parse(d.textContent||"{
         <div class="error-message">Command not found: ${a}</div>
         <div style="color: #ccc; margin-top: 8px;">Type 'help' to see available commands.</div>
       </div>
-    `)}function y(){Array.from(t.children).forEach(s=>{s.id!=="input-line"&&!s.classList.contains("footer-text")&&s.remove()})}function b(){t.scrollTop=t.scrollHeight}document.addEventListener("keydown",a=>{a.key==="Tab"&&document.querySelectorAll(".terminal-link").forEach(i=>{i.setAttribute("tabindex","0")})});document.querySelectorAll(".command-name").forEach(a=>{a.addEventListener("click",()=>{const s=a.textContent;s&&e&&(e.value=s,e.focus())})});
+    `)}function y(){Array.from(t.children).forEach(s=>{s.id!=="input-line"&&!s.classList.contains("footer-text")&&s.remove()})}function b(){t.scrollTop=t.scrollHeight}document.addEventListener("keydown",a=>{a.key==="Tab"&&document.querySelectorAll(".terminal-link").forEach(c=>{c.setAttribute("tabindex","0")})});document.querySelectorAll(".command-name").forEach(a=>{a.addEventListener("click",()=>{const s=a.textContent;s&&e&&(e.value=s,e.focus())})});
