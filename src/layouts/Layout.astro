@@ -4,6 +4,7 @@ export interface Props {
 }
 
 const { title } = Astro.props;
+import ParticleField from '../components/ParticleField.astro';
 ---
 
 <!doctype html>
@@ -31,7 +32,10 @@ const { title } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
-    <slot />
+    <ParticleField />
+    <main class="main-content">
+      <slot />
+    </main>
   </body>
 </html>
 
@@ -47,6 +51,14 @@ const { title } = Astro.props;
     background: #0c0c0c;
     color: #00ff00;
     overflow-x: hidden;
+    position: relative;
+  }
+  
+  .main-content {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    background: transparent;
   }
   
   * {

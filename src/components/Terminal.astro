@@ -85,6 +85,10 @@ if (baseConfig.base !== '/') {
             <span class="command-description">Clear the terminal screen</span>
           </div>
           <div class="command-item">
+            <span class="command-name">effects</span>
+            <span class="command-description">Toggle background visual effects</span>
+          </div>
+          <div class="command-item">
             <span class="command-name">whoami</span>
             <span class="command-description">Display user information</span>
           </div>
@@ -111,15 +115,37 @@ if (baseConfig.base !== '/') {
 </div>
 
 <style>
+  /* CSS Custom Properties for easy theme customization */
+  :root {
+    --glow-color: #00ff00;
+    --glow-intensity: 0.4;
+    --terminal-bg: #1a1a1a;
+    --terminal-text: #00ff00;
+    --cursor-glow: 0 0 8px rgba(0, 255, 0, 0.6);
+    --border-glow: 0 0 15px rgba(0, 255, 0, 0.2);
+    --subtle-glow: 0 0 3px rgba(0, 255, 0, 0.3);
+  }
+
   .terminal-container {
-    background: #1a1a1a;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    background: var(--terminal-bg);
+    border-radius: 12px;
+    box-shadow: 
+      0 15px 40px rgba(0, 0, 0, 0.9),
+      inset 0 0 0 2px rgba(0, 255, 0, 0.3),
+      inset 0 0 20px rgba(0, 255, 0, 0.05),
+      var(--border-glow);
     max-width: 1100px;
     width: 1100px;
     margin: 0 auto;
     font-family: 'Fira Code', 'Monaco', 'Menlo', monospace;
     overflow: hidden;
+    position: relative;
+    contain: layout style paint;
+    animation: terminalGlow 6s ease-in-out infinite alternate;
+    /* Subtle CRT screen curvature */
+    transform: perspective(1000px) rotateX(0.5deg);
+    /* CRT-style border */
+    border: 1px solid rgba(0, 255, 0, 0.1);
   }
 
   .terminal-header {
@@ -153,8 +179,11 @@ if (baseConfig.base !== '/') {
   }
 
   .terminal-body {
-    background: #000;
-    color: #00ff00;
+    background: 
+      radial-gradient(ellipse at center, rgba(0, 20, 0, 0.1) 0%, #000 70%),
+      linear-gradient(0deg, transparent 50%, rgba(0, 255, 0, 0.01) 50%);
+    background-size: 100% 100%, 100% 4px;
+    color: var(--terminal-text);
     padding: 20px;
     height: 700px;
     min-height: 700px;
@@ -163,6 +192,33 @@ if (baseConfig.base !== '/') {
     line-height: 1.5;
     overflow-y: auto;
     box-sizing: border-box;
+    position: relative;
+    /* Subtle phosphor glow effect */
+    text-shadow: 
+      0 0 2px currentColor,
+      0 0 4px rgba(0, 255, 0, 0.3);
+    /* Very subtle screen flicker */
+    animation: subtleFlicker 8s ease-in-out infinite alternate;
+  }
+  
+  /* Moving scanline effect */
+  .terminal-body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      rgba(0, 255, 0, 0.1) 20%, 
+      rgba(0, 255, 0, 0.3) 50%, 
+      rgba(0, 255, 0, 0.1) 80%, 
+      transparent 100%);
+    opacity: 0.7;
+    animation: scanline 8s linear infinite;
+    pointer-events: none;
+    z-index: 1000;
   }
 
   .terminal-content {
@@ -179,10 +235,12 @@ if (baseConfig.base !== '/') {
   }
 
   .terminal-prompt {
-    color: #00ff00;
+    color: var(--terminal-text);
     font-weight: bold;
     margin-right: 8px;
     flex-shrink: 0;
+    text-shadow: var(--subtle-glow);
+    animation: promptPulse 4s ease-in-out infinite alternate;
   }
 
   .terminal-command {
@@ -309,10 +367,20 @@ if (baseConfig.base !== '/') {
     padding: 2px 6px;
     border-radius: 4px;
     background: rgba(255, 136, 0, 0.1);
+    transition: all 0.3s ease;
+    text-shadow: 0 0 5px currentColor;
+    border: 1px solid rgba(255, 136, 0, 0.3);
   }
 
   .command-name:hover {
     background: rgba(255, 136, 0, 0.2);
+    box-shadow: 
+      0 0 10px rgba(255, 136, 0, 0.5),
+      inset 0 0 5px rgba(255, 136, 0, 0.2);
+    transform: translateY(-1px);
+    text-shadow: 
+      0 0 8px currentColor,
+      0 0 15px currentColor;
   }
 
   .command-description {
@@ -453,14 +521,105 @@ if (baseConfig.base !== '/') {
   }
 
   .terminal-cursor {
-    color: #00ff00;
-    animation: blink 1s infinite;
+    color: var(--terminal-text);
+    animation: cursorBlink 1s infinite, cursorGlow 3s ease-in-out infinite alternate;
     margin-left: 4px;
+    text-shadow: var(--cursor-glow);
   }
 
   @keyframes blink {
     0%, 50% { opacity: 1; }
     51%, 100% { opacity: 0; }
+  }
+  
+  /* Enhanced glow animations */
+  @keyframes terminalGlow {
+    0% {
+      box-shadow: 
+        0 15px 40px rgba(0, 0, 0, 0.9),
+        inset 0 0 0 2px rgba(0, 255, 0, 0.2),
+        inset 0 0 20px rgba(0, 255, 0, 0.05),
+        0 0 15px rgba(0, 255, 0, 0.15);
+    }
+    100% {
+      box-shadow: 
+        0 15px 40px rgba(0, 0, 0, 0.9),
+        inset 0 0 0 2px rgba(0, 255, 0, 0.3),
+        inset 0 0 20px rgba(0, 255, 0, 0.08),
+        0 0 20px rgba(0, 255, 0, 0.25);
+    }
+  }
+  
+  @keyframes cursorBlink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+  
+  @keyframes cursorGlow {
+    0% {
+      text-shadow: 
+        0 0 5px rgba(0, 255, 0, 0.5),
+        0 0 8px rgba(0, 255, 0, 0.3);
+    }
+    100% {
+      text-shadow: 
+        0 0 8px rgba(0, 255, 0, 0.7),
+        0 0 12px rgba(0, 255, 0, 0.4);
+    }
+  }
+  
+  @keyframes promptPulse {
+    0% {
+      text-shadow: 
+        0 0 2px currentColor,
+        0 0 4px rgba(0, 255, 0, 0.2);
+    }
+    100% {
+      text-shadow: 
+        0 0 4px currentColor,
+        0 0 8px rgba(0, 255, 0, 0.3);
+    }
+  }
+  
+  @keyframes subtleFlicker {
+    0%, 98% {
+      opacity: 1;
+    }
+    99% {
+      opacity: 0.98;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes profileGlow {
+    0% {
+      box-shadow: 
+        0 0 15px rgba(0, 255, 0, 0.4),
+        0 0 30px rgba(0, 255, 0, 0.2),
+        inset 0 0 10px rgba(0, 255, 0, 0.1);
+    }
+    100% {
+      box-shadow: 
+        0 0 25px rgba(0, 255, 0, 0.6),
+        0 0 50px rgba(0, 255, 0, 0.3),
+        inset 0 0 15px rgba(0, 255, 0, 0.15);
+    }
+  }
+  
+  @keyframes scanline {
+    0% {
+      top: -2px;
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
+    100% {
+      top: 100%;
+      opacity: 0;
+    }
   }
 
   .typing-animation {
@@ -517,14 +676,22 @@ if (baseConfig.base !== '/') {
     border-radius: 50%;
     display: block;
     margin: 0 auto 20px;
-    border: 3px solid #00ff00;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 2px solid var(--glow-color);
+    box-shadow: 
+      0 0 10px rgba(0, 255, 0, 0.3),
+      0 0 20px rgba(0, 255, 0, 0.1),
+      inset 0 0 5px rgba(0, 255, 0, 0.05);
+    transition: all 0.3s ease;
+    animation: profileGlow 5s ease-in-out infinite alternate;
   }
 
   .profile-picture:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+    transform: scale(1.03) rotate(1deg);
+    box-shadow: 
+      0 0 15px rgba(0, 255, 0, 0.4),
+      0 0 30px rgba(0, 255, 0, 0.2),
+      inset 0 0 8px rgba(0, 255, 0, 0.1);
+    animation-play-state: paused;
   }
 
   /* Responsive Design */
@@ -552,6 +719,7 @@ if (baseConfig.base !== '/') {
     }
   }
 
+  @media (max-width: 768px) {
     .command-item {
       flex-direction: column;
       gap: 4px;
@@ -591,10 +759,27 @@ if (baseConfig.base !== '/') {
     
     .terminal-cursor {
       animation: none;
+      text-shadow: var(--cursor-glow);
     }
     
     .terminal-link {
       transition: none;
+    }
+    
+    .terminal-container {
+      animation: none;
+    }
+    
+    .terminal-prompt {
+      animation: none;
+    }
+    
+    .profile-picture {
+      animation: none;
+    }
+    
+    .terminal-body::before {
+      animation: none;
     }
   }
 
@@ -686,6 +871,9 @@ if (baseConfig.base !== '/') {
       case 'clear':
         clearTerminal();
         return;
+      case 'effects':
+        toggleEffects();
+        break;
       case 'github':
       case 'linkedin':
       case 'resume':
@@ -733,6 +921,7 @@ if (baseConfig.base !== '/') {
         <div class="help-section">
           <div class="help-header">⌨️ Terminal Controls</div>
           <div class="help-command"><span class="command-icon">→</span><span class="command-name">clear</span><span class="command-separator">:</span> <span class="command-desc">Clear the terminal screen</span></div>
+          <div class="help-command"><span class="command-icon">→</span><span class="command-name">effects</span><span class="command-separator">:</span> <span class="command-desc">Toggle background visual effects</span></div>
           <div class="help-command"><span class="command-icon">→</span><span class="command-name">help</span><span class="command-separator">:</span> <span class="command-desc">Display this help menu</span></div>
         </div>
         
@@ -800,6 +989,34 @@ if (baseConfig.base !== '/') {
       setTimeout(() => {
         window.open(link.url, '_blank');
       }, 500);
+    }
+  }
+
+  function toggleEffects() {
+    const particleField = document.getElementById('particle-field') as HTMLElement;
+    if (particleField) {
+      const isCurrentlyVisible = particleField.style.display !== 'none';
+      particleField.style.display = isCurrentlyVisible ? 'none' : 'block';
+      
+      // Store preference in localStorage
+      localStorage.setItem('effects-enabled', (!isCurrentlyVisible).toString());
+      
+      const status = isCurrentlyVisible ? 'disabled' : 'enabled';
+      const statusColor = isCurrentlyVisible ? '#ff6b6b' : '#00ff00';
+      
+      addToTerminal(`
+        <div class="terminal-output">
+          <div style="color: ${statusColor}; font-weight: bold;">Background visual effects ${status}</div>
+          <div style="color: #ccc; margin-top: 8px;">Use 'effects' command to toggle particle field and visual enhancements on/off.</div>
+        </div>
+      `);
+    } else {
+      addToTerminal(`
+        <div class="terminal-output">
+          <div class="error-message">Visual effects not available</div>
+          <div style="color: #ccc; margin-top: 8px;">Background effects may be disabled due to performance or accessibility settings.</div>
+        </div>
+      `);
     }
   }
 

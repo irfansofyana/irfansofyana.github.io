@@ -4,15 +4,13 @@ import Terminal from '../components/Terminal.astro';
 ---
 
 <Layout title="Irfan Sofyana Putra">
-  <main>
-    <Terminal />
-  </main>
+  <Terminal />
 </Layout>
 
 <style>
-  main {
+  :global(.main-content) {
     min-height: 100vh;
-    background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
+    background: transparent;
     padding: 2rem 1rem;
     display: flex;
     align-items: center;
@@ -20,7 +18,7 @@ import Terminal from '../components/Terminal.astro';
   }
 
   @media (max-width: 768px) {
-    main {
+    :global(.main-content) {
       padding: 1rem 0.5rem;
       align-items: center;
     }
