@@ -82,11 +82,7 @@ if (baseConfig.base !== '/') {
           </div>
           <div class="command-item">
             <span class="command-name">clear</span>
-            <span class="command-description">Clear the terminal screen</span>
-          </div>
-          <div class="command-item">
-            <span class="command-name">effects</span>
-            <span class="command-description">Toggle background visual effects</span>
+            <span class="command-description">Clear terminal and restore welcome state</span>
           </div>
           <div class="command-item">
             <span class="command-name">whoami</span>
@@ -808,6 +804,18 @@ if (baseConfig.base !== '/') {
   const terminalInput = document.getElementById('terminal-input');
   const terminalContent = document.getElementById('terminal-content');
   const inputLine = document.getElementById('input-line');
+  
+  // Store original welcome content for restoration after clear
+  let originalWelcomeContent: Element[] = [];
+  
+  // Store original content when page loads
+  function storeOriginalContent() {
+    const children = Array.from(terminalContent.children);
+    originalWelcomeContent = children.filter(child => 
+      child.id !== 'input-line' && 
+      !child.classList.contains('footer-text')
+    ).map(element => element.cloneNode(true) as Element);
+  }
 
   // Focus input when clicking anywhere in terminal (but not on page load)
   // Removed auto-focus on page load to prevent unwanted scrolling
@@ -816,6 +824,14 @@ if (baseConfig.base !== '/') {
     if (e.target.closest('.terminal-container')) {
       terminalInput?.focus();
     }
+  });
+  
+  // Store original content when page loads
+  document.addEventListener('DOMContentLoaded', () => {
+    // Small delay to ensure all content is rendered
+    setTimeout(() => {
+      storeOriginalContent();
+    }, 100);
   });
 
   // Handle command input
@@ -871,9 +887,6 @@ if (baseConfig.base !== '/') {
       case 'clear':
         clearTerminal();
         return;
-      case 'effects':
-        toggleEffects();
-        break;
       case 'github':
       case 'linkedin':
       case 'resume':
@@ -920,8 +933,7 @@ if (baseConfig.base !== '/') {
         
         <div class="help-section">
           <div class="help-header">⌨️ Terminal Controls</div>
-          <div class="help-command"><span class="command-icon">→</span><span class="command-name">clear</span><span class="command-separator">:</span> <span class="command-desc">Clear the terminal screen</span></div>
-          <div class="help-command"><span class="command-icon">→</span><span class="command-name">effects</span><span class="command-separator">:</span> <span class="command-desc">Toggle background visual effects</span></div>
+          <div class="help-command"><span class="command-icon">→</span><span class="command-name">clear</span><span class="command-separator">:</span> <span class="command-desc">Clear terminal and restore welcome state</span></div>
           <div class="help-command"><span class="command-icon">→</span><span class="command-name">help</span><span class="command-separator">:</span> <span class="command-desc">Display this help menu</span></div>
         </div>
         
@@ -992,33 +1004,6 @@ if (baseConfig.base !== '/') {
     }
   }
 
-  function toggleEffects() {
-    const particleField = document.getElementById('particle-field') as HTMLElement;
-    if (particleField) {
-      const isCurrentlyVisible = particleField.style.display !== 'none';
-      particleField.style.display = isCurrentlyVisible ? 'none' : 'block';
-      
-      // Store preference in localStorage
-      localStorage.setItem('effects-enabled', (!isCurrentlyVisible).toString());
-      
-      const status = isCurrentlyVisible ? 'disabled' : 'enabled';
-      const statusColor = isCurrentlyVisible ? '#ff6b6b' : '#00ff00';
-      
-      addToTerminal(`
-        <div class="terminal-output">
-          <div style="color: ${statusColor}; font-weight: bold;">Background visual effects ${status}</div>
-          <div style="color: #ccc; margin-top: 8px;">Use 'effects' command to toggle particle field and visual enhancements on/off.</div>
-        </div>
-      `);
-    } else {
-      addToTerminal(`
-        <div class="terminal-output">
-          <div class="error-message">Visual effects not available</div>
-          <div style="color: #ccc; margin-top: 8px;">Background effects may be disabled due to performance or accessibility settings.</div>
-        </div>
-      `);
-    }
-  }
 
   function showError(command: string) {
     addToTerminal(`
@@ -1030,13 +1015,49 @@ if (baseConfig.base !== '/') {
   }
 
   function clearTerminal() {
-    // Remove all content except the input line and footer
-    const children = Array.from(terminalContent.children);
-    children.forEach(child => {
-      if (child.id !== 'input-line' && !child.classList.contains('footer-text')) {
-        child.remove();
-      }
-    });
+    // Show clearing message first
+    addToTerminal(`
+      <div class="terminal-output">
+        <div class="success-message">Clearing terminal and restoring welcome state...</div>
+      </div>
+    `);
+    
+    // Small delay for user feedback, then clear and restore
+    setTimeout(() => {
+      // Remove all content except the input line and footer
+      const children = Array.from(terminalContent.children);
+      children.forEach(child => {
+        if (child.id !== 'input-line' && !child.classList.contains('footer-text')) {
+          child.remove();
+        }
+      });
+      
+      // Restore the original welcome state
+      restoreWelcomeState();
+    }, 300);
+  }
+  
+  function restoreWelcomeState() {
+    // Restore the original welcome content using cloned elements
+    // This preserves the exact CSS scoping and styling from server-rendered content
+    const inputLineElement = document.getElementById('input-line');
+    const parent = inputLineElement?.parentNode;
+    
+    if (parent && inputLineElement && originalWelcomeContent.length > 0) {
+      // Insert each cloned element before the input line
+      originalWelcomeContent.forEach(element => {
+        const clonedElement = element.cloneNode(true) as Element;
+        parent.insertBefore(clonedElement, inputLineElement);
+      });
+      
+      // Re-enable click-to-copy functionality for command names
+      setTimeout(() => {
+        setupClickToCopy();
+      }, 100);
+    }
+    
+    // Scroll to bottom after restoring content
+    setTimeout(scrollToBottom, 200);
   }
 
   function scrollToBottom() {
@@ -1057,14 +1078,23 @@ if (baseConfig.base !== '/') {
     }
   });
 
-  // Add click-to-copy functionality for commands
-  document.querySelectorAll('.command-name').forEach((cmd: Element) => {
-    cmd.addEventListener('click', () => {
-      const command = cmd.textContent;
-      if (command && terminalInput) {
-        terminalInput.value = command;
-        terminalInput.focus();
-      }
+  // Add click-to-copy functionality for commands (initial load)
+  function setupClickToCopy() {
+    document.querySelectorAll('.command-name').forEach((cmd: Element) => {
+      cmd.addEventListener('click', () => {
+        const command = cmd.textContent;
+        if (command && terminalInput) {
+          terminalInput.value = command;
+          terminalInput.focus();
+        }
+      });
     });
+  }
+  
+  // Setup click-to-copy after DOM loads
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      setupClickToCopy();
+    }, 200);
   });
 </script>
