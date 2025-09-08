@@ -41,6 +41,8 @@ const { title } = Astro.props;
   html {
     font-family: 'Fira Code', monospace;
     background: #0c0c0c;
+    height: 100%;
+    overflow: hidden;
   }
   
   body {
@@ -48,15 +50,18 @@ const { title } = Astro.props;
     padding: 0;
     background: #0c0c0c;
     color: #00ff00;
-    overflow-x: hidden;
+    height: 100%;
+    overflow: hidden;
     position: relative;
   }
   
   .main-content {
     position: relative;
     z-index: 10;
-    min-height: 100vh;
+    height: 100vh;
+    height: 100dvh; /* Use dynamic viewport height for mobile */
     background: transparent;
+    overflow: hidden;
   }
   
   * {
