@@ -17,12 +17,6 @@
       "description": "Check out my professional experience and qualifications"
     },
     {
-      "label": "Second Brain 🧠",
-      "url": "https://brain.irfansp.dev",
-      "command": "brain",
-      "description": "Dive into my digital knowledge garden and thought processes"
-    },
-    {
       "label": "TIL ✨",
       "url": "https://til.irfansp.dev",
       "command": "til",
