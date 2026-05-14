@@ -26,7 +26,7 @@ if (baseConfig.base !== '/') {
     </div>
     <div class="terminal-title">terminal</div>
   </div>
-  
+
   <div class="terminal-body">
     <div class="terminal-content" id="terminal-content">
       <!-- Welcome Message -->
@@ -34,12 +34,14 @@ if (baseConfig.base !== '/') {
         <span class="terminal-prompt">{profile.prompt}</span>
         <span class="terminal-command typing-animation">whoami</span>
       </div>
-      
+
+      <div class="section-rule">┌─ WHOAMI ────────────────────────────────────────────────────┐</div>
+
       <div class="terminal-output">
-        <img 
-          src={profilePicturePath} 
-          alt="Profile Picture" 
-          class="profile-picture" 
+        <img
+          src={profilePicturePath}
+          alt="Profile Picture"
+          class="profile-picture"
           onerror="this.style.display='none'; console.log('Profile picture failed to load:', this.src);"
           onload="console.log('Profile picture loaded successfully:', this.src);"
         />
@@ -51,7 +53,7 @@ if (baseConfig.base !== '/') {
         <div class="bio">{profile.bio}</div>
         {profile.contact && profile.contact.show_in_welcome && (
           <div class="contact-info">
-            <div class="contact-label">📧 Contact:</div>
+            <div class="contact-label">CONTACT</div>
             <a href={`mailto:${profile.contact.email}`} class="contact-email">{profile.contact.email}</a>
           </div>
         )}
@@ -62,10 +64,11 @@ if (baseConfig.base !== '/') {
         <span class="terminal-prompt">{profile.prompt}</span>
         <span class="terminal-command">help</span>
       </div>
-      
+
+      <div class="section-rule">┌─ HELP ──────────────────────────────────────────────────────┐</div>
+
       <div class="terminal-output">
         <div class="command-list">
-          <div class="command-header">Available Commands:</div>
           {profile.social_links.map((link) => (
             <div class="command-item">
               <span class="command-name">{link.command}</span>
@@ -94,42 +97,31 @@ if (baseConfig.base !== '/') {
       <!-- Interactive Prompt -->
       <div class="terminal-line interactive-line" id="input-line">
         <span class="terminal-prompt">{profile.prompt}</span>
-        <input 
-          type="text" 
-          id="terminal-input" 
-          class="terminal-input" 
-          autocomplete="off" 
+        <input
+          type="text"
+          id="terminal-input"
+          class="terminal-input"
+          autocomplete="off"
           spellcheck="false"
           placeholder="Type a command..."
         />
         <span class="terminal-cursor">_</span>
       </div>
-      
+
       <div class="footer-text">{profile.footer_text}</div>
     </div>
   </div>
 </div>
 
 <style>
-  /* CSS Custom Properties for easy theme customization */
-  :root {
-    --glow-color: #00ff00;
-    --glow-intensity: 0.4;
-    --terminal-bg: #1a1a1a;
-    --terminal-text: #00ff00;
-    --cursor-glow: 0 0 8px rgba(0, 255, 0, 0.6);
-    --border-glow: 0 0 15px rgba(0, 255, 0, 0.2);
-    --subtle-glow: 0 0 3px rgba(0, 255, 0, 0.3);
-  }
-
   .terminal-container {
-    background: var(--terminal-bg);
+    background: var(--bg-terminal);
     border-radius: 12px;
-    box-shadow: 
+    box-shadow:
       0 15px 40px rgba(0, 0, 0, 0.9),
-      inset 0 0 0 2px rgba(0, 255, 0, 0.3),
-      inset 0 0 20px rgba(0, 255, 0, 0.05),
-      var(--border-glow);
+      inset 0 0 0 2px var(--phosphor-soft),
+      inset 0 0 20px rgba(54, 255, 122, 0.05),
+      0 0 18px var(--phosphor-soft);
     max-width: 1100px;
     width: 1100px;
     height: 90vh;
@@ -137,25 +129,22 @@ if (baseConfig.base !== '/') {
     max-height: 90vh;
     max-height: 90dvh;
     margin: 0 auto;
-    font-family: 'Fira Code', 'Monaco', 'Menlo', monospace;
+    font-family: var(--font-mono);
     overflow: hidden;
     position: relative;
     contain: layout style paint;
-    animation: terminalGlow 6s ease-in-out infinite alternate;
-    /* Subtle CRT screen curvature */
     transform: perspective(1000px) rotateX(0.5deg);
-    /* CRT-style border */
-    border: 1px solid rgba(0, 255, 0, 0.1);
+    border: 1px solid rgba(54, 255, 122, 0.1);
     display: flex;
     flex-direction: column;
   }
 
   .terminal-header {
-    background: #2d2d2d;
+    background: #1c1f1c;
     padding: 12px 16px;
     display: flex;
     align-items: center;
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid #2a2e2a;
   }
 
   .terminal-controls {
@@ -174,34 +163,30 @@ if (baseConfig.base !== '/') {
   .maximize { background: #28ca42; }
 
   .terminal-title {
-    color: #999;
-    font-size: 14px;
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+    letter-spacing: var(--tr-wide);
     margin-left: auto;
     margin-right: auto;
   }
 
   .terminal-body {
-    background: 
-      radial-gradient(ellipse at center, rgba(0, 20, 0, 0.1) 0%, #000 70%),
-      linear-gradient(0deg, transparent 50%, rgba(0, 255, 0, 0.01) 50%);
+    background:
+      radial-gradient(ellipse at center, rgba(0, 30, 10, 0.18) 0%, #000 75%),
+      linear-gradient(0deg, transparent 50%, rgba(54, 255, 122, 0.012) 50%);
     background-size: 100% 100%, 100% 4px;
-    color: var(--terminal-text);
-    padding: 20px;
+    color: var(--phosphor);
+    padding: var(--sp-5);
     flex: 1;
-    font-size: 14px;
-    line-height: 1.5;
+    font-size: var(--fs-base);
+    line-height: var(--lh-base);
     overflow-y: auto;
     box-sizing: border-box;
     position: relative;
-    /* Subtle phosphor glow effect */
-    text-shadow: 
-      0 0 2px currentColor,
-      0 0 4px rgba(0, 255, 0, 0.3);
-    /* Very subtle screen flicker */
     animation: subtleFlicker 8s ease-in-out infinite alternate;
   }
-  
-  /* Moving scanline effect */
+
+  /* Moving scanline */
   .terminal-body::before {
     content: '';
     position: absolute;
@@ -209,16 +194,16 @@ if (baseConfig.base !== '/') {
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, 
-      transparent 0%, 
-      rgba(0, 255, 0, 0.1) 20%, 
-      rgba(0, 255, 0, 0.3) 50%, 
-      rgba(0, 255, 0, 0.1) 80%, 
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(54, 255, 122, 0.1) 20%,
+      rgba(54, 255, 122, 0.3) 50%,
+      rgba(54, 255, 122, 0.1) 80%,
       transparent 100%);
-    opacity: 0.7;
-    animation: scanline 8s linear infinite;
+    opacity: 0.4;
+    animation: scanline 12s linear infinite;
     pointer-events: none;
-    z-index: 1000;
+    z-index: 2;
   }
 
   .terminal-content {
@@ -229,472 +214,457 @@ if (baseConfig.base !== '/') {
   }
 
   .terminal-line {
-    margin-bottom: 8px;
+    margin-bottom: var(--sp-2);
     display: flex;
     align-items: center;
   }
 
   .terminal-prompt {
-    color: var(--terminal-text);
-    font-weight: bold;
-    margin-right: 8px;
+    font-family: var(--font-display);
+    font-weight: var(--fw-regular);
+    color: var(--phosphor);
+    text-shadow: var(--glow-sm);
+    margin-right: var(--sp-2);
     flex-shrink: 0;
-    text-shadow: var(--subtle-glow);
-    animation: promptPulse 4s ease-in-out infinite alternate;
   }
 
   .terminal-command {
-    color: #fff;
+    color: var(--text-primary);
+    font-weight: var(--fw-medium);
   }
 
   .terminal-input {
     background: transparent;
     border: none;
     outline: none;
-    color: #fff;
+    color: var(--text-primary);
     font-family: inherit;
     font-size: inherit;
+    font-weight: var(--fw-medium);
+    caret-color: var(--phosphor);
     flex: 1;
     padding: 0;
     margin: 0;
   }
 
   .terminal-input::placeholder {
-    color: #666;
+    color: var(--text-muted);
   }
 
   .terminal-output {
-    padding: 12px;
-    margin-bottom: 12px;
-    background: rgba(255, 255, 255, 0.05);
+    padding: var(--sp-4);
+    margin-bottom: var(--sp-4);
+    background: rgba(255, 255, 255, 0.03);
     border-radius: 4px;
-    border-left: 3px solid #4d4d4d;
+    border-left: 2px solid rgba(54, 255, 122, 0.2);
+  }
+
+  /* ASCII section rule */
+  .section-rule {
+    font-family: var(--font-mono);
+    font-size: var(--fs-base);
+    color: var(--phosphor);
+    text-shadow: var(--glow-sm);
+    letter-spacing: 0;
+    white-space: pre;
+    overflow: hidden;
+    margin: var(--sp-5) 0 var(--sp-3);
+    user-select: none;
+    opacity: 0.85;
   }
 
   .welcome-message {
-    color: #00ff00;
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 8px;
+    color: var(--phosphor);
+    font-size: var(--fs-md);
+    font-weight: var(--fw-medium);
+    text-shadow: var(--glow-sm);
+    margin-bottom: var(--sp-2);
   }
 
   .name {
-    color: #fff;
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 4px;
+    font-family: var(--font-display);
+    font-size: var(--fs-display);
+    font-weight: var(--fw-black);
+    letter-spacing: var(--tr-display);
+    line-height: var(--lh-tight);
+    color: var(--text-primary);
+    margin: var(--sp-3) 0 var(--sp-2);
   }
 
   .title {
-    color: #ffd700;
-    font-size: 16px;
-    margin-bottom: 12px;
+    font-size: var(--fs-micro);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: var(--accent-gold);
+    opacity: 0.85;
+    margin-bottom: var(--sp-4);
   }
 
   .bio {
-    color: #ccc;
-    line-height: 1.6;
-    margin-bottom: 16px;
+    font-family: var(--font-mono);
+    font-size: var(--fs-prose);
+    line-height: var(--lh-prose);
+    font-weight: var(--fw-regular);
+    color: var(--text-primary);
+    max-width: 64ch;
+    margin: 0 0 var(--sp-4);
+  }
+
+  .bio::first-letter {
+    font-family: var(--font-display);
+    font-weight: var(--fw-black);
+    font-size: 2.4em;
+    float: left;
+    line-height: 0.9;
+    margin: 0.1em 0.18em 0 0;
+    color: var(--phosphor);
+    text-shadow: 0 0 8px var(--phosphor-dim);
+  }
+
+  .about-extended {
+    font-family: var(--font-mono);
+    font-size: var(--fs-prose);
+    line-height: var(--lh-prose);
+    color: var(--text-secondary);
+    max-width: 64ch;
+    margin-top: var(--sp-4);
   }
 
   .contact-info {
-    margin-top: 16px;
-    padding: 12px;
-    background: rgba(0, 255, 0, 0.05);
-    border-left: 3px solid #00ff00;
+    margin-top: var(--sp-4);
+    padding: var(--sp-3) var(--sp-4);
+    background: rgba(54, 255, 122, 0.04);
+    border-left: 2px solid var(--phosphor);
     border-radius: 4px;
   }
 
   .contact-label {
-    color: #00ff00;
-    font-weight: bold;
-    margin-bottom: 8px;
-    font-size: 14px;
+    font-size: var(--fs-micro);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: var(--phosphor);
+    text-shadow: var(--glow-sm);
+    margin-bottom: var(--sp-2);
   }
 
   .contact-email {
-    color: #ffd700;
-    font-family: monospace;
-    font-size: 14px;
-    background: rgba(255, 215, 0, 0.1);
-    padding: 4px 8px;
+    color: var(--text-primary);
+    font-size: var(--fs-base);
+    font-weight: var(--fw-medium);
+    background: rgba(255, 217, 102, 0.06);
+    border: 1px solid rgba(255, 217, 102, 0.3);
+    padding: 4px 10px;
     border-radius: 4px;
     display: inline-block;
     text-decoration: none;
-    transition: all 0.3s ease;
+    transition: all 240ms cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
   }
 
   .contact-email:hover {
-    background: rgba(255, 215, 0, 0.2);
-    color: #fff;
-    text-decoration: underline;
+    background: rgba(255, 217, 102, 0.14);
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
     transform: translateY(-1px);
   }
 
   .command-list {
-    margin-bottom: 16px;
+    margin-bottom: var(--sp-4);
   }
 
   .command-header {
-    color: #0c8;
-    font-weight: bold;
-    margin-bottom: 12px;
-    font-size: 1.1em;
+    font-size: var(--fs-md);
+    font-weight: var(--fw-semi);
+    letter-spacing: var(--tr-wide);
+    text-transform: uppercase;
+    color: var(--phosphor);
+    text-shadow: var(--glow-sm);
+    margin-bottom: var(--sp-3);
   }
 
   .command-item {
-    margin-bottom: 12px;
-    padding: 6px;
-    border-radius: 4px;
-    transition: background 0.2s;
+    margin-bottom: var(--sp-2);
+    padding: var(--sp-1) var(--sp-3);
+    border-left: 2px solid transparent;
+    border-radius: 2px;
+    transition: all 240ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .command-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .command-details {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 4px;
+    background: rgba(255, 180, 84, 0.05);
+    border-left-color: var(--accent-amber);
+    padding-left: calc(var(--sp-3) + 4px);
   }
 
   .command-name {
-    color: #f80;
+    color: var(--accent-amber);
     cursor: pointer;
-    font-weight: bold;
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--tr-tight);
     padding: 2px 6px;
-    border-radius: 4px;
-    background: rgba(255, 136, 0, 0.1);
-    transition: all 0.3s ease;
-    text-shadow: 0 0 5px currentColor;
-    border: 1px solid rgba(255, 136, 0, 0.3);
+    border-radius: 3px;
+    background: rgba(255, 180, 84, 0.08);
+    transition: all 240ms cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 180, 84, 0.2);
+    margin-right: var(--sp-2);
   }
 
   .command-name:hover {
-    background: rgba(255, 136, 0, 0.2);
-    box-shadow: 
-      0 0 10px rgba(255, 136, 0, 0.5),
-      inset 0 0 5px rgba(255, 136, 0, 0.2);
-    transform: translateY(-1px);
-    text-shadow: 
-      0 0 8px currentColor,
-      0 0 15px currentColor;
+    background: rgba(255, 180, 84, 0.18);
+    border-color: var(--accent-amber);
+    box-shadow: 0 0 8px rgba(255, 180, 84, 0.35);
   }
 
   .command-description {
-    color: #ccc;
+    font-size: var(--fs-sm);
+    color: var(--text-secondary);
+    font-weight: var(--fw-regular);
   }
-  
-  .command-usage {
-    color: #999;
-    font-size: 0.9em;
-    margin-left: 20px;
-  }
-  
-  .command-usage code {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-family: monospace;
-    color: #0c8;
-  }
-  
+
+  /* Help command output */
   .help-container {
-    font-family: monospace;
-    padding: 5px 0;
+    padding: 0;
   }
-  
+
   .help-title {
-    color: #0f0;
-    text-align: center;
-    margin-bottom: 15px;
-    margin-top: 5px;
-    font-weight: bold;
-    font-size: 1.1em;
-    border-bottom: 1px solid #0f0;
-    padding-bottom: 8px;
+    font-family: var(--font-display);
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-black);
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: var(--phosphor);
+    text-shadow: 0 0 8px var(--phosphor-dim);
+    text-align: left;
+    border: none;
+    padding: 0;
+    margin: 0 0 var(--sp-5);
   }
-  
+
   .help-section {
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    padding-left: 10px;
+    margin-bottom: var(--sp-5);
   }
-  
+
   .help-section:last-of-type {
-    margin-bottom: 10px;
+    margin-bottom: var(--sp-2);
   }
-  
+
   .help-header {
-    color: #0f0;
-    font-weight: bold;
-    margin-bottom: 10px;
-    font-size: 1em;
-    padding-left: 5px;
+    font-family: var(--font-display);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-black);
+    letter-spacing: var(--tr-wide);
+    text-transform: uppercase;
+    color: var(--phosphor);
+    text-shadow: var(--glow-sm);
+    margin: 0 0 var(--sp-3);
   }
-  
+
+  .help-header::before {
+    content: "▸ ";
+    color: var(--phosphor);
+  }
+
   .help-command {
-    margin: 5px 0;
-    padding-left: 15px;
+    margin: var(--sp-1) 0;
+    padding-left: var(--sp-4);
     display: flex;
-    align-items: flex-start;
+    align-items: baseline;
     flex-wrap: wrap;
+    gap: var(--sp-2);
+    font-size: var(--fs-sm);
   }
-  
+
   .command-icon {
-    color: #0f0;
-    margin-right: 8px;
-    font-size: 0.9em;
+    color: var(--phosphor);
+    opacity: 0.6;
   }
-  
-  .command-name {
-    color: #0f0;
-    cursor: pointer;
-    font-weight: bold;
+
+  .command-separator {
+    color: var(--text-muted);
+  }
+
+  .command-desc {
+    color: var(--text-secondary);
+  }
+
+  .command-url {
+    color: #889988;
+    font-style: italic;
+    font-size: var(--fs-micro);
+  }
+
+  /* Skills */
+  .skills-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--sp-2) var(--sp-5);
+    margin-top: var(--sp-3);
+  }
+
+  .skill-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-3);
+    border-bottom: 1px dashed rgba(54, 255, 122, 0.15);
+    padding-bottom: var(--sp-1);
+  }
+
+  .skill-num {
+    font-family: var(--font-display);
+    font-size: var(--fs-micro);
+    font-weight: var(--fw-regular);
+    color: var(--text-muted);
+    letter-spacing: var(--tr-wide);
+  }
+
+  .skill-name {
+    font-family: var(--font-display);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-black);
+    letter-spacing: var(--tr-wide);
+    text-transform: uppercase;
+    color: var(--accent-gold);
+  }
+
+  /* Whoami output */
+  .whoami-row {
+    font-size: var(--fs-base);
+    color: var(--text-secondary);
+    margin: var(--sp-1) 0;
+  }
+
+  .whoami-label {
+    font-family: var(--font-display);
+    font-size: var(--fs-micro);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: var(--text-muted);
     display: inline-block;
     min-width: 80px;
-    margin-right: 5px;
-  }
-  
-  .command-name:hover {
-    text-decoration: underline;
-  }
-  
-  .command-separator {
-    color: #0f0;
-    margin-right: 5px;
-  }
-  
-  .command-desc {
-    color: #ccc;
-  }
-  
-  .command-url {
-    color: #888;
-    font-style: italic;
-  }
-
-  .links-section {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .terminal-link {
-    display: flex;
-    align-items: center;
-    color: #00ff00;
-    text-decoration: none;
-    padding: 8px 12px;
-    border: 1px solid #333;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-    background: rgba(0, 255, 0, 0.05);
-  }
-
-  .terminal-link:hover {
-    background: rgba(0, 255, 0, 0.1);
-    border-color: #00ff00;
-    transform: translateX(4px);
-  }
-
-  .link-command {
-    color: #ffd700;
-    font-weight: bold;
-    width: 100px;
-  }
-
-  .link-arrow {
-    color: #00ff00;
-    margin: 0 12px;
-  }
-
-  .link-label {
-    color: #fff;
+    margin-right: var(--sp-3);
   }
 
   .interactive-line {
-    margin-top: 32px;
-    padding: 8px 0;
+    margin-top: var(--sp-5);
+    padding: var(--sp-2) 0;
   }
 
   .terminal-cursor {
-    color: var(--terminal-text);
-    animation: cursorBlink 1s infinite, cursorGlow 3s ease-in-out infinite alternate;
+    color: var(--phosphor);
+    animation: cursorBlink 1s infinite;
     margin-left: 4px;
     text-shadow: var(--cursor-glow);
   }
 
-  @keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
-  }
-  
-  /* Enhanced glow animations */
-  @keyframes terminalGlow {
-    0% {
-      box-shadow: 
-        0 15px 40px rgba(0, 0, 0, 0.9),
-        inset 0 0 0 2px rgba(0, 255, 0, 0.2),
-        inset 0 0 20px rgba(0, 255, 0, 0.05),
-        0 0 15px rgba(0, 255, 0, 0.15);
-    }
-    100% {
-      box-shadow: 
-        0 15px 40px rgba(0, 0, 0, 0.9),
-        inset 0 0 0 2px rgba(0, 255, 0, 0.3),
-        inset 0 0 20px rgba(0, 255, 0, 0.08),
-        0 0 20px rgba(0, 255, 0, 0.25);
-    }
-  }
-  
   @keyframes cursorBlink {
     0%, 50% { opacity: 1; }
     51%, 100% { opacity: 0; }
   }
-  
-  @keyframes cursorGlow {
-    0% {
-      text-shadow: 
-        0 0 5px rgba(0, 255, 0, 0.5),
-        0 0 8px rgba(0, 255, 0, 0.3);
-    }
-    100% {
-      text-shadow: 
-        0 0 8px rgba(0, 255, 0, 0.7),
-        0 0 12px rgba(0, 255, 0, 0.4);
-    }
-  }
-  
-  @keyframes promptPulse {
-    0% {
-      text-shadow: 
-        0 0 2px currentColor,
-        0 0 4px rgba(0, 255, 0, 0.2);
-    }
-    100% {
-      text-shadow: 
-        0 0 4px currentColor,
-        0 0 8px rgba(0, 255, 0, 0.3);
-    }
-  }
-  
+
   @keyframes subtleFlicker {
-    0%, 98% {
-      opacity: 1;
-    }
-    99% {
-      opacity: 0.98;
-    }
-    100% {
-      opacity: 1;
-    }
+    0%, 98% { opacity: 1; }
+    99% { opacity: 0.98; }
+    100% { opacity: 1; }
   }
-  
+
   @keyframes profileGlow {
     0% {
-      box-shadow: 
-        0 0 15px rgba(0, 255, 0, 0.4),
-        0 0 30px rgba(0, 255, 0, 0.2),
-        inset 0 0 10px rgba(0, 255, 0, 0.1);
+      box-shadow:
+        0 0 15px rgba(54, 255, 122, 0.4),
+        0 0 30px rgba(54, 255, 122, 0.2),
+        inset 0 0 10px rgba(54, 255, 122, 0.1);
     }
     100% {
-      box-shadow: 
-        0 0 25px rgba(0, 255, 0, 0.6),
-        0 0 50px rgba(0, 255, 0, 0.3),
-        inset 0 0 15px rgba(0, 255, 0, 0.15);
+      box-shadow:
+        0 0 25px rgba(54, 255, 122, 0.6),
+        0 0 50px rgba(54, 255, 122, 0.3),
+        inset 0 0 15px rgba(54, 255, 122, 0.15);
     }
   }
-  
+
   @keyframes scanline {
-    0% {
-      top: -2px;
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.8;
-    }
-    100% {
-      top: 100%;
-      opacity: 0;
-    }
+    0%   { top: -2px; opacity: 1; }
+    50%  { opacity: 0.6; }
+    100% { top: 100%; opacity: 0; }
   }
 
   .typing-animation {
     overflow: hidden;
-    border-right: 2px solid #00ff00;
+    border-right: 2px solid var(--phosphor);
     white-space: nowrap;
     animation: typing 2s steps(6, end), blink-caret 0.75s step-end infinite;
   }
 
   @keyframes typing {
     from { width: 0; }
-    to { width: 100%; }
+    to   { width: 100%; }
   }
 
   @keyframes blink-caret {
     from, to { border-color: transparent; }
-    50% { border-color: #00ff00; }
+    50%      { border-color: var(--phosphor); }
   }
 
   .footer-text {
-    color: #666;
-    font-size: 12px;
-    margin-top: 32px;
+    font-family: var(--font-display);
+    font-size: var(--fs-micro);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--tr-eyebrow);
+    text-transform: uppercase;
+    color: var(--text-muted);
     text-align: center;
+    margin-top: var(--sp-6);
   }
 
-
   .error-message {
-    color: #ff6b6b;
-    margin: 8px 0;
+    color: var(--accent-error);
+    font-weight: var(--fw-medium);
+    margin: var(--sp-2) 0;
   }
 
   .success-message {
-    color: #00ff00;
-    margin: 8px 0;
+    color: var(--phosphor);
+    font-weight: var(--fw-medium);
+    text-shadow: var(--glow-sm);
+    margin: var(--sp-2) 0;
   }
 
   .terminal-url-link {
-    color: #00bfff;
+    color: var(--accent-cyan);
     text-decoration: underline;
-    transition: color 0.2s ease;
+    transition: color 200ms ease;
   }
 
   .terminal-url-link:hover {
-    color: #66d9ff;
-    text-decoration: underline;
+    color: #a0e4ff;
   }
 
   .profile-picture {
-    max-width: 150px;
-    width: 150px;
-    height: 150px;
+    max-width: 180px;
+    width: 180px;
+    height: 180px;
     object-fit: cover;
     border-radius: 50%;
     display: block;
-    margin: 0 auto 20px;
-    border: 2px solid var(--glow-color);
-    box-shadow: 
-      0 0 10px rgba(0, 255, 0, 0.3),
-      0 0 20px rgba(0, 255, 0, 0.1),
-      inset 0 0 5px rgba(0, 255, 0, 0.05);
-    transition: all 0.3s ease;
+    margin: 0 auto var(--sp-5);
+    border: 2px solid var(--phosphor);
+    box-shadow:
+      0 0 10px rgba(54, 255, 122, 0.3),
+      0 0 20px rgba(54, 255, 122, 0.1),
+      inset 0 0 5px rgba(54, 255, 122, 0.05);
+    transition: transform 240ms cubic-bezier(0.4, 0, 0.2, 1);
     animation: profileGlow 5s ease-in-out infinite alternate;
   }
 
   .profile-picture:hover {
-    transform: scale(1.03) rotate(1deg);
-    box-shadow: 
-      0 0 15px rgba(0, 255, 0, 0.4),
-      0 0 30px rgba(0, 255, 0, 0.2),
-      inset 0 0 8px rgba(0, 255, 0, 0.1);
+    transform: scale(1.03);
     animation-play-state: paused;
   }
 
-  /* Responsive Design */
+  /* Responsive */
   @media (max-width: 1200px) {
     .terminal-container {
       width: 95vw;
@@ -716,87 +686,50 @@ if (baseConfig.base !== '/') {
       max-height: 95dvh;
       margin: 0;
       border-radius: 8px;
+      transform: none;
     }
 
     .terminal-body {
-      padding: 16px;
-      font-size: 13px;
+      padding: var(--sp-4);
     }
+
+    .name { font-size: 2.25rem; }
+    .section-rule { font-size: var(--fs-sm); }
   }
 
   @media (max-width: 768px) {
+    .name { font-size: 2rem; }
     .command-item {
       flex-direction: column;
-      gap: 4px;
+      gap: var(--sp-1);
     }
-
-    .command-name {
-      width: auto;
-    }
-
-    .terminal-link {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 4px;
-    }
-
-    .link-command {
-      width: auto;
-    }
-
-    .link-arrow {
-      margin: 0;
-    }
-
     .profile-picture {
-      max-width: 120px;
-      width: 120px;
-      height: 120px;
+      max-width: 130px;
+      width: 130px;
+      height: 130px;
+    }
+    .section-rule {
+      font-size: var(--fs-xs, 11px);
+    }
+    .bio::first-letter {
+      font-size: 2em;
     }
   }
 
   /* Accessibility */
   @media (prefers-reduced-motion: reduce) {
-    .typing-animation {
-      animation: none;
-      border-right: none;
-    }
-    
-    .terminal-cursor {
-      animation: none;
-      text-shadow: var(--cursor-glow);
-    }
-    
-    .terminal-link {
-      transition: none;
-    }
-    
-    .terminal-container {
-      animation: none;
-    }
-    
-    .terminal-prompt {
-      animation: none;
-    }
-    
-    .profile-picture {
-      animation: none;
-    }
-    
-    .terminal-body::before {
-      animation: none;
-    }
+    .typing-animation { animation: none; border-right: none; }
+    .terminal-cursor { animation: none; }
+    .terminal-container { animation: none; transform: none; }
+    .profile-picture { animation: none; }
+    .terminal-body { animation: none; }
+    .terminal-body::before { animation: none; }
+    .command-item, .command-name, .contact-email, .profile-picture { transition: none; }
   }
 
-  /* High contrast mode */
   @media (prefers-contrast: high) {
-    .terminal-container {
-      border: 2px solid #fff;
-    }
-    
-    .terminal-link {
-      border-color: #fff;
-    }
+    .terminal-container { border: 2px solid #fff; }
+    .command-name { border-color: #fff; }
   }
 </style>
 
@@ -813,37 +746,30 @@ if (baseConfig.base !== '/') {
   const terminalInput = document.getElementById('terminal-input');
   const terminalContent = document.getElementById('terminal-content');
   const inputLine = document.getElementById('input-line');
-  
+
   // Store original welcome content for restoration after clear
   let originalWelcomeContent: Element[] = [];
-  
-  // Store original content when page loads
+
   function storeOriginalContent() {
     const children = Array.from(terminalContent.children);
-    originalWelcomeContent = children.filter(child => 
-      child.id !== 'input-line' && 
+    originalWelcomeContent = children.filter(child =>
+      child.id !== 'input-line' &&
       !child.classList.contains('footer-text')
     ).map(element => element.cloneNode(true) as Element);
   }
-
-  // Focus input when clicking anywhere in terminal (but not on page load)
-  // Removed auto-focus on page load to prevent unwanted scrolling
 
   document.addEventListener('click', (e) => {
     if (e.target.closest('.terminal-container')) {
       terminalInput?.focus();
     }
   });
-  
-  // Store original content when page loads
+
   document.addEventListener('DOMContentLoaded', () => {
-    // Small delay to ensure all content is rendered
     setTimeout(() => {
       storeOriginalContent();
     }, 100);
   });
 
-  // Handle command input
   terminalInput?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       const command = terminalInput.value.trim().toLowerCase();
@@ -871,15 +797,12 @@ if (baseConfig.base !== '/') {
     }
   });
 
-  // Execute commands
   function executeCommand(command: string) {
-    // Add command to terminal
     addToTerminal(`<div class="terminal-line">
       <span class="terminal-prompt">${profileData.prompt}</span>
       <span class="terminal-command">${command}</span>
     </div>`);
 
-    // Process command
     switch (command) {
       case 'help':
         showHelp();
@@ -914,41 +837,48 @@ if (baseConfig.base !== '/') {
   function addToTerminal(html: string) {
     const div = document.createElement('div');
     div.innerHTML = html;
-    inputLine.parentNode?.insertBefore(div.firstElementChild, inputLine);
+    while (div.firstElementChild) {
+      inputLine.parentNode?.insertBefore(div.firstElementChild, inputLine);
+    }
+  }
+
+  function sectionRule(label: string) {
+    const dashCount = Math.max(4, 58 - label.length);
+    return `<div class="section-rule">┌─ ${label} ${'─'.repeat(dashCount)}┐</div>`;
   }
 
   function showHelp() {
-    // Create social links HTML dynamically
     const socialLinksHTML = profileData.social_links ? profileData.social_links.map((link: { command: string, label: string, url: string }) => {
-      return `<div class="help-command"><span class="command-icon">→</span><span class="command-name">${link.command}</span><span class="command-separator">:</span> <span class="command-desc">Open ${link.label}</span> <span class="command-url">(${link.url})</span></div>`;
+      return `<div class="help-command"><span class="command-icon">→</span><span class="command-name">${link.command}</span><span class="command-separator">·</span><span class="command-desc">Open ${link.label}</span><span class="command-url">${link.url}</span></div>`;
     }).join('') : '';
 
     const helpText = `
+      ${sectionRule('HELP')}
       <div class="terminal-output help-container">
-        <div class="help-title">TERMINAL HELP</div>
-        
+        <div class="help-title">Terminal Help</div>
+
         <div class="help-section">
-          <div class="help-header">⚡ Information Commands</div>
-          <div class="help-command"><span class="command-icon">→</span><span class="command-name">about</span><span class="command-separator">:</span> <span class="command-desc">Display detailed information about me</span></div>
-          <div class="help-command"><span class="command-icon">→</span><span class="command-name">whoami</span><span class="command-separator">:</span> <span class="command-desc">Display user information</span></div>
-          <div class="help-command"><span class="command-icon">→</span><span class="command-name">skills</span><span class="command-separator">:</span> <span class="command-desc">Show my technical skills</span></div>
+          <div class="help-header">Information</div>
+          <div class="help-command"><span class="command-icon">→</span><span class="command-name">about</span><span class="command-separator">·</span><span class="command-desc">Display detailed information about me</span></div>
+          <div class="help-command"><span class="command-icon">→</span><span class="command-name">whoami</span><span class="command-separator">·</span><span class="command-desc">Display user information</span></div>
+          <div class="help-command"><span class="command-icon">→</span><span class="command-name">skills</span><span class="command-separator">·</span><span class="command-desc">Show my technical skills</span></div>
         </div>
-        
+
         <div class="help-section">
-          <div class="help-header">🔗 External Links</div>
+          <div class="help-header">External Links</div>
           ${socialLinksHTML}
         </div>
-        
+
         <div class="help-section">
-          <div class="help-header">⌨️ Terminal Controls</div>
-          <div class="help-command"><span class="command-icon">→</span><span class="command-name">clear</span><span class="command-separator">:</span> <span class="command-desc">Clear terminal and restore welcome state</span></div>
-          <div class="help-command"><span class="command-icon">→</span><span class="command-name">help</span><span class="command-separator">:</span> <span class="command-desc">Display this help menu</span></div>
+          <div class="help-header">Terminal Controls</div>
+          <div class="help-command"><span class="command-icon">→</span><span class="command-name">clear</span><span class="command-separator">·</span><span class="command-desc">Clear terminal and restore welcome state</span></div>
+          <div class="help-command"><span class="command-icon">→</span><span class="command-name">help</span><span class="command-separator">·</span><span class="command-desc">Display this help menu</span></div>
         </div>
-        
+
         <div class="help-section">
-          <div class="help-header">🔤 Keyboard Shortcuts</div>
-          <div class="help-command"><span class="command-icon">→</span><span>↑/↓</span><span class="command-separator">:</span> <span class="command-desc">Navigate command history</span></div>
-          <div class="help-command"><span class="command-icon">→</span><span>Tab</span><span class="command-separator">:</span> <span class="command-desc">Enable keyboard navigation</span></div>
+          <div class="help-header">Keyboard Shortcuts</div>
+          <div class="help-command"><span class="command-icon">→</span><span class="command-name">↑/↓</span><span class="command-separator">·</span><span class="command-desc">Navigate command history</span></div>
+          <div class="help-command"><span class="command-icon">→</span><span class="command-name">Tab</span><span class="command-separator">·</span><span class="command-desc">Enable keyboard navigation</span></div>
         </div>
       </div>`;
 
@@ -957,13 +887,12 @@ if (baseConfig.base !== '/') {
 
   function showAbout() {
     const aboutText = `
+      ${sectionRule('ABOUT')}
       <div class="terminal-output">
         <div class="name">${profileData.name}</div>
         <div class="title">${profileData.title}</div>
         <div class="bio">${profileData.bio}</div>
-        <div style="margin-top: 16px; color: #ccc;">
-          ${profileData.about_extended}
-        </div>
+        <div class="about-extended">${profileData.about_extended}</div>
       </div>
     `;
     addToTerminal(aboutText);
@@ -971,27 +900,28 @@ if (baseConfig.base !== '/') {
 
   function showWhoami() {
     const whoamiText = `
+      ${sectionRule('WHOAMI')}
       <div class="terminal-output">
-        <div class="success-message">User: ${profileData.name}</div>
-        <div style="color: #ccc;">Role: ${profileData.title}</div>
-        <div style="color: #ccc;">Status: ${profileData.whoami_info.status}</div>
-        <div style="color: #ccc;">Location: ${profileData.whoami_info.location}</div>
+        <div class="success-message">User · ${profileData.name}</div>
+        <div class="whoami-row"><span class="whoami-label">Role</span>${profileData.title}</div>
+        <div class="whoami-row"><span class="whoami-label">Status</span>${profileData.whoami_info.status}</div>
+        <div class="whoami-row"><span class="whoami-label">Location</span>${profileData.whoami_info.location}</div>
       </div>
     `;
     addToTerminal(whoamiText);
   }
 
   function showSkills() {
+    const rows = profileData.skills.map((skill: string, i: number) => {
+      const num = String(i + 1).padStart(2, '0');
+      return `<div class="skill-row"><span class="skill-num">${num}</span><span class="skill-name">${skill}</span></div>`;
+    }).join('');
+
     const skillsText = `
+      ${sectionRule('SKILLS')}
       <div class="terminal-output">
-        <div class="command-header">Technical Skills:</div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-top: 12px;">
-          ${profileData.skills.map((skill: string) => `
-            <div style="color: #ffd700; padding: 4px 8px; background: rgba(255, 215, 0, 0.1); border-radius: 4px;">
-              ${skill}
-            </div>
-          `).join('')}
-        </div>
+        <div class="command-header">Technical Skills</div>
+        <div class="skills-list">${rows}</div>
       </div>
     `;
     addToTerminal(skillsText);
@@ -1003,7 +933,7 @@ if (baseConfig.base !== '/') {
       addToTerminal(`
         <div class="terminal-output">
           <div class="success-message">Opening ${link.label}...</div>
-          <div style="color: #ccc; margin-top: 8px;">Please go to <a href="${link.url}" target="_blank" class="terminal-url-link">${link.url}</a> if it doesn't open automatically.</div>
+          <div class="whoami-row" style="margin-top:8px;">Please go to <a href="${link.url}" target="_blank" class="terminal-url-link">${link.url}</a> if it doesn't open automatically.</div>
         </div>
       `);
       setTimeout(() => {
@@ -1012,71 +942,59 @@ if (baseConfig.base !== '/') {
     }
   }
 
-
   function showError(command: string) {
     addToTerminal(`
       <div class="terminal-output">
-        <div class="error-message">Command not found: ${command}</div>
-        <div style="color: #ccc; margin-top: 8px;">Type 'help' to see available commands.</div>
+        <div class="error-message">Command not found · ${command}</div>
+        <div class="whoami-row" style="margin-top:8px;">Type <span class="command-name">help</span> to see available commands.</div>
       </div>
     `);
   }
 
   function clearTerminal() {
-    // Show clearing message first
     addToTerminal(`
       <div class="terminal-output">
         <div class="success-message">Clearing terminal and restoring welcome state...</div>
       </div>
     `);
-    
-    // Small delay for user feedback, then clear and restore
+
     setTimeout(() => {
-      // Remove all content except the input line and footer
       const children = Array.from(terminalContent.children);
       children.forEach(child => {
         if (child.id !== 'input-line' && !child.classList.contains('footer-text')) {
           child.remove();
         }
       });
-      
-      // Restore the original welcome state
+
       restoreWelcomeState();
     }, 300);
   }
-  
+
   function restoreWelcomeState() {
-    // Restore the original welcome content using cloned elements
-    // This preserves the exact CSS scoping and styling from server-rendered content
     const inputLineElement = document.getElementById('input-line');
     const parent = inputLineElement?.parentNode;
-    
+
     if (parent && inputLineElement && originalWelcomeContent.length > 0) {
-      // Insert each cloned element before the input line
       originalWelcomeContent.forEach(element => {
         const clonedElement = element.cloneNode(true) as Element;
         parent.insertBefore(clonedElement, inputLineElement);
       });
-      
-      // Re-enable click-to-copy functionality for command names
+
       setTimeout(() => {
         setupClickToCopy();
       }, 100);
     }
-    
-    // Scroll to bottom after restoring content
+
     setTimeout(scrollToBottom, 200);
   }
 
   function scrollToBottom() {
-    // Only scroll to bottom if user is already near the bottom
     const isNearBottom = terminalContent.scrollTop + terminalContent.clientHeight >= terminalContent.scrollHeight - 100;
     if (isNearBottom) {
       terminalContent.scrollTop = terminalContent.scrollHeight;
     }
   }
 
-  // Add keyboard navigation for existing command names
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Tab') {
       const links = document.querySelectorAll('.terminal-link');
@@ -1086,7 +1004,6 @@ if (baseConfig.base !== '/') {
     }
   });
 
-  // Add click-to-copy functionality for commands (initial load)
   function setupClickToCopy() {
     document.querySelectorAll('.command-name').forEach((cmd: Element) => {
       cmd.addEventListener('click', () => {
@@ -1098,8 +1015,7 @@ if (baseConfig.base !== '/') {
       });
     });
   }
-  
-  // Setup click-to-copy after DOM loads
+
   document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       setupClickToCopy();

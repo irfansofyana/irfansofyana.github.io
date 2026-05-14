@@ -14,12 +14,12 @@ const { title } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    
+
     <!-- Preload fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=JetBrains+Mono:wght@400;800&display=swap" rel="stylesheet">
+
     <!-- SEO Meta Tags -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content="Software Engineer" />
@@ -27,7 +27,7 @@ const { title } = Astro.props;
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content="Software Engineer" />
-    
+
     <title>{title}</title>
   </head>
   <body>
@@ -37,54 +37,126 @@ const { title } = Astro.props;
   </body>
 </html>
 
-<style>
+<style is:global>
+  :root {
+    /* Fonts */
+    --font-mono:    'Fira Code', 'Monaco', 'Menlo', monospace;
+    --font-display: 'JetBrains Mono', 'Fira Code', monospace;
+
+    /* Type scale (rem, base 16px) */
+    --fs-micro:   0.6875rem;   /* 11px */
+    --fs-sm:      0.8125rem;   /* 13px */
+    --fs-base:    0.875rem;    /* 14px */
+    --fs-prose:   0.9375rem;   /* 15px */
+    --fs-md:      1rem;        /* 16px */
+    --fs-lg:      1.5rem;      /* 24px */
+    --fs-display: 3rem;        /* 48px */
+
+    /* Weights */
+    --fw-regular: 400;
+    --fw-medium:  500;
+    --fw-semi:    600;
+    --fw-black:   800;
+
+    /* Tracking */
+    --tr-display: -0.04em;
+    --tr-tight:   -0.01em;
+    --tr-normal:   0;
+    --tr-wide:     0.04em;
+    --tr-eyebrow:  0.24em;
+
+    /* Line-heights */
+    --lh-tight: 1.05;
+    --lh-snug:  1.35;
+    --lh-base:  1.55;
+    --lh-prose: 1.75;
+
+    /* Spacing (4-pt) */
+    --sp-1: 4px;
+    --sp-2: 8px;
+    --sp-3: 12px;
+    --sp-4: 16px;
+    --sp-5: 24px;
+    --sp-6: 32px;
+
+    /* Color */
+    --bg-base:        #0a0a0a;
+    --bg-terminal:    #111613;
+    --phosphor:       #36ff7a;
+    --phosphor-dim:   rgba(54, 255, 122, 0.5);
+    --phosphor-soft:  rgba(54, 255, 122, 0.25);
+    --text-primary:   #e8ffe8;
+    --text-secondary: #a8b8a8;
+    --text-muted:     #6a7a6a;
+    --accent-amber:   #ffb454;
+    --accent-gold:    #ffd966;
+    --accent-cyan:    #6ad7ff;
+    --accent-error:   #ff7a85;
+
+    /* Glow utility shadows */
+    --glow-sm: 0 0 4px var(--phosphor-dim);
+    --glow-md: 0 0 6px var(--phosphor-dim);
+    --glow-lg: 0 0 10px var(--phosphor-dim);
+
+    /* Legacy aliases (kept so Terminal.astro doesn't break mid-edit) */
+    --terminal-bg: var(--bg-terminal);
+    --terminal-text: var(--phosphor);
+    --glow-color: var(--phosphor);
+    --cursor-glow: 0 0 8px var(--phosphor-dim);
+    --border-glow: 0 0 15px var(--phosphor-soft);
+    --subtle-glow: var(--glow-sm);
+  }
+
   html {
-    font-family: 'Fira Code', monospace;
-    background: #0c0c0c;
+    font-family: var(--font-mono);
+    font-size: 16px;
+    font-feature-settings: "calt" 1, "liga" 1, "tnum" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    background: var(--bg-base);
     height: 100%;
     overflow: hidden;
   }
-  
+
   body {
     margin: 0;
     padding: 0;
-    background: #0c0c0c;
-    color: #00ff00;
+    background: var(--bg-base);
+    color: var(--phosphor);
+    font-size: var(--fs-base);
+    line-height: var(--lh-base);
+    font-weight: var(--fw-regular);
+    letter-spacing: var(--tr-normal);
     height: 100%;
     overflow: hidden;
     position: relative;
   }
-  
+
   .main-content {
     position: relative;
     z-index: 10;
     height: 100vh;
-    height: 100dvh; /* Use dynamic viewport height for mobile */
+    height: 100dvh;
     background: transparent;
     overflow: hidden;
   }
-  
-  * {
-    box-sizing: border-box;
+
+  * { box-sizing: border-box; }
+
+  ::selection {
+    background: var(--phosphor-dim);
+    color: var(--bg-base);
+    text-shadow: none;
   }
-  
-  /* Scrollbar styling */
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
-  
-  ::-webkit-scrollbar-track {
-    background: #1a1a1a;
-  }
-  
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg-terminal); }
   ::-webkit-scrollbar-thumb {
-    background: #00ff00;
+    background: var(--phosphor-soft);
     border-radius: 4px;
   }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background: #00cc00;
-  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--phosphor); }
 </style>
-</body>
 </html>
