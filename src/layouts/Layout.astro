@@ -38,125 +38,107 @@ const { title } = Astro.props;
 </html>
 
 <style is:global>
+  /* ── Design tokens (Irfan Devs Design System, ported from design handoff) ── */
   :root {
-    /* Fonts */
-    --font-mono:    'Fira Code', 'Monaco', 'Menlo', monospace;
-    --font-display: 'JetBrains Mono', 'Fira Code', monospace;
+    /* base surfaces */
+    --bg-base: #0a0a0a; --bg-terminal: #111613; --bg-chrome: #1c1f1c; --border-chrome: #2a2e2a;
+    /* phosphor (primary) */
+    --phosphor: #36ff7a; --phosphor-dim: rgba(54,255,122,.5); --phosphor-soft: rgba(54,255,122,.25); --phosphor-faint: rgba(54,255,122,.1); --phosphor-ghost: rgba(54,255,122,.04);
+    /* text */
+    --text-primary: #e8ffe8; --text-secondary: #a8b8a8; --text-muted: #6a7a6a; --text-url: #889988;
+    /* accents */
+    --accent-amber: #ffb454; --accent-gold: #ffd966; --accent-cyan: #6ad7ff; --accent-cyan-hover: #a0e4ff; --accent-error: #ff7a85;
+    --amber-wash: rgba(255,180,84,.08); --amber-wash-strong: rgba(255,180,84,.18); --amber-line: rgba(255,180,84,.2);
+    --gold-wash: rgba(255,217,102,.06); --gold-wash-strong: rgba(255,217,102,.14); --gold-line: rgba(255,217,102,.3);
+    /* window chrome */
+    --traffic-close: #ff5f57; --traffic-min: #ffbd2e; --traffic-max: #28ca42;
+    /* semantic aliases */
+    --surface-output: rgba(255,255,255,.03); --surface-hover: rgba(255,180,84,.05);
+    --border-output: rgba(54,255,122,.2); --border-window: rgba(54,255,122,.1); --border-dashed: rgba(54,255,122,.15);
+    --accent-contrast: var(--bg-base);
 
-    /* Type scale (rem, base 16px) */
-    --fs-micro:   0.6875rem;   /* 11px */
-    --fs-sm:      0.8125rem;   /* 13px */
-    --fs-base:    0.875rem;    /* 14px */
-    --fs-prose:   0.9375rem;   /* 15px */
-    --fs-md:      1rem;        /* 16px */
-    --fs-lg:      1.5rem;      /* 24px */
-    --fs-display: 3rem;        /* 48px */
+    /* type */
+    --font-mono: "Fira Code", "Monaco", "Menlo", monospace;
+    --font-display: "JetBrains Mono", "Fira Code", monospace;
+    --fs-micro: .6875rem; --fs-sm: .8125rem; --fs-base: .875rem; --fs-prose: .9375rem; --fs-md: 1rem; --fs-lg: 1.5rem; --fs-xl: 2.25rem; --fs-display: 3rem;
+    --fw-regular: 400; --fw-medium: 500; --fw-semi: 600; --fw-black: 800;
+    --tr-display: -.04em; --tr-tight: -.01em; --tr-normal: 0; --tr-wide: .04em; --tr-eyebrow: .24em;
+    --lh-tight: 1.05; --lh-snug: 1.35; --lh-base: 1.55; --lh-prose: 1.75;
+    --measure-prose: 64ch;
+    --font-features: "calt" 1, "liga" 1, "tnum" 1;
 
-    /* Weights */
-    --fw-regular: 400;
-    --fw-medium:  500;
-    --fw-semi:    600;
-    --fw-black:   800;
+    /* spacing */
+    --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 64px;
+    --radius-window: 12px; --radius-window-sm: 8px; --radius-block: 4px; --radius-chip: 3px; --radius-row: 2px; --radius-round: 50%;
+    --window-max: 1100px;
 
-    /* Tracking */
-    --tr-display: -0.04em;
-    --tr-tight:   -0.01em;
-    --tr-normal:   0;
-    --tr-wide:     0.04em;
-    --tr-eyebrow:  0.24em;
-
-    /* Line-heights */
-    --lh-tight: 1.05;
-    --lh-snug:  1.35;
-    --lh-base:  1.55;
-    --lh-prose: 1.75;
-
-    /* Spacing (4-pt) */
-    --sp-1: 4px;
-    --sp-2: 8px;
-    --sp-3: 12px;
-    --sp-4: 16px;
-    --sp-5: 24px;
-    --sp-6: 32px;
-
-    /* Color */
-    --bg-base:        #0a0a0a;
-    --bg-terminal:    #111613;
-    --phosphor:       #36ff7a;
-    --phosphor-dim:   rgba(54, 255, 122, 0.5);
-    --phosphor-soft:  rgba(54, 255, 122, 0.25);
-    --text-primary:   #e8ffe8;
-    --text-secondary: #a8b8a8;
-    --text-muted:     #6a7a6a;
-    --accent-amber:   #ffb454;
-    --accent-gold:    #ffd966;
-    --accent-cyan:    #6ad7ff;
-    --accent-error:   #ff7a85;
-
-    /* Glow utility shadows */
+    /* effects / motion */
     --glow-sm: 0 0 4px var(--phosphor-dim);
     --glow-md: 0 0 6px var(--phosphor-dim);
     --glow-lg: 0 0 10px var(--phosphor-dim);
-
-    /* Legacy aliases (kept so Terminal.astro doesn't break mid-edit) */
-    --terminal-bg: var(--bg-terminal);
-    --terminal-text: var(--phosphor);
-    --glow-color: var(--phosphor);
+    --glow-text: 0 0 8px var(--phosphor-dim);
     --cursor-glow: 0 0 8px var(--phosphor-dim);
     --border-glow: 0 0 15px var(--phosphor-soft);
-    --subtle-glow: var(--glow-sm);
+    --glow-amber: 0 0 8px rgba(255,180,84,.35);
+    --glow-window: 0 15px 40px rgba(0,0,0,.9), inset 0 0 0 2px var(--phosphor-soft), inset 0 0 20px rgba(54,255,122,.05), 0 0 18px var(--phosphor-soft);
+    --glow-avatar: 0 0 10px rgba(54,255,122,.3), 0 0 20px rgba(54,255,122,.1), inset 0 0 5px rgba(54,255,122,.05);
+    --crt-vignette: radial-gradient(ellipse at center, rgba(0,30,10,.18), #000 75%);
+    --crt-scanlines: linear-gradient(0deg, transparent 50%, rgba(54,255,122,.012) 50%);
+    --ease-standard: cubic-bezier(.4,0,.2,1);
+    --dur-fast: .2s; --dur-base: .24s; --dur-clear: .3s; --dur-open: .5s;
+    --window-tilt: perspective(1000px) rotateX(.5deg);
   }
 
-  html {
-    font-family: var(--font-mono);
-    font-size: 16px;
-    font-feature-settings: "calt" 1, "liga" 1, "tnum" 1;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-    background: var(--bg-base);
-    height: 100%;
-    overflow: hidden;
+  /* Paper theme (ink-on-paper, glows/vignette/tilt disabled) */
+  [data-theme="paper"] {
+    --bg-base: #ecebe4; --bg-terminal: #f8f7f1; --bg-chrome: #e2e0d6; --border-chrome: #cfccbf;
+    --phosphor: #0b7a3b; --phosphor-dim: rgba(11,122,59,.45); --phosphor-soft: rgba(11,122,59,.22); --phosphor-faint: rgba(11,122,59,.1); --phosphor-ghost: rgba(11,122,59,.05);
+    --text-primary: #142014; --text-secondary: #46544a; --text-muted: #77817a; --text-url: #6c786f;
+    --accent-amber: #a85a00; --accent-gold: #846300; --accent-cyan: #0a6893; --accent-cyan-hover: #064d6e; --accent-error: #b72a3a;
+    --amber-wash: rgba(168,90,0,.07); --amber-wash-strong: rgba(168,90,0,.14); --amber-line: rgba(168,90,0,.25);
+    --gold-wash: rgba(132,99,0,.06); --gold-wash-strong: rgba(132,99,0,.12); --gold-line: rgba(132,99,0,.3);
+    --surface-output: rgba(0,0,0,.03); --surface-hover: rgba(168,90,0,.05);
+    --border-output: rgba(11,122,59,.25); --border-window: rgba(0,0,0,.08); --border-dashed: rgba(11,122,59,.2);
+    --glow-sm: none; --glow-md: none; --glow-lg: none; --glow-text: none;
+    --glow-window: 0 1px 0 rgba(255,255,255,.6) inset, 0 12px 32px rgba(40,40,20,.12), 0 0 0 1px rgba(0,0,0,.06);
+    --glow-avatar: 0 0 0 1px var(--phosphor-soft);
+    --glow-amber: none;
+    --crt-vignette: none; --crt-scanlines: none; --window-tilt: none;
+    --accent-contrast: #f8f7f1;
   }
 
-  body {
-    margin: 0;
-    padding: 0;
-    background: var(--bg-base);
-    color: var(--phosphor);
-    font-size: var(--fs-base);
-    line-height: var(--lh-base);
-    font-weight: var(--fw-regular);
-    letter-spacing: var(--tr-normal);
-    height: 100%;
-    overflow: hidden;
-    position: relative;
-  }
+  html { font-family: var(--font-mono); font-size: 16px; font-feature-settings: var(--font-features); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; background: var(--bg-base); height: 100%; }
+  body { margin: 0; background: var(--bg-base); color: var(--phosphor); font-size: var(--fs-base); line-height: var(--lh-base); height: 100%; position: relative; transition: background var(--dur-base) var(--ease-standard); }
+  * { box-sizing: border-box; }
+  ::selection { background: var(--phosphor-dim); color: var(--bg-base); text-shadow: none; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg-terminal); }
+  ::-webkit-scrollbar-thumb { background: var(--phosphor-soft); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--phosphor); }
+  a { color: var(--accent-cyan); text-decoration: underline; transition: color .2s ease; }
+  a:hover { color: var(--accent-cyan-hover); }
+
+  @keyframes cursorBlink { 0%, 50% { opacity: 1; } 51%, to { opacity: 0; } }
+  @keyframes subtleFlicker { 0%, 98% { opacity: 1; } 99% { opacity: .98; } to { opacity: 1; } }
+  @keyframes scanline { 0% { top: -2px; opacity: 1; } 50% { opacity: .6; } to { top: 100%; opacity: 0; } }
+  @keyframes profileGlow { 0% { box-shadow: 0 0 15px rgba(54,255,122,.4), 0 0 30px rgba(54,255,122,.2), inset 0 0 10px rgba(54,255,122,.1); } to { box-shadow: 0 0 25px rgba(54,255,122,.6), 0 0 50px rgba(54,255,122,.3), inset 0 0 15px rgba(54,255,122,.15); } }
+  @keyframes typing { 0% { width: 0; } to { width: 100%; } }
+  @keyframes blinkCaret { 0%, to { border-color: transparent; } 50% { border-color: var(--phosphor); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 
   .main-content {
     position: relative;
     z-index: 10;
     height: 100vh;
-    height: 100dvh;
+    height: 100dvh; /* Use dynamic viewport height for mobile */
     background: transparent;
     overflow: hidden;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(8px, 2vh, 24px) clamp(8px, 2vw, 32px);
   }
-
-  * { box-sizing: border-box; }
-
-  ::selection {
-    background: var(--phosphor-dim);
-    color: var(--bg-base);
-    text-shadow: none;
-  }
-
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 8px; }
-  ::-webkit-scrollbar-track { background: var(--bg-terminal); }
-  ::-webkit-scrollbar-thumb {
-    background: var(--phosphor-soft);
-    border-radius: 4px;
-  }
-  ::-webkit-scrollbar-thumb:hover { background: var(--phosphor); }
 </style>
-</html>

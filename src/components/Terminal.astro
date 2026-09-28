@@ -2,7 +2,6 @@
 // Import profile data from JSON file
 import profileData from '../data/profile.json';
 
-// Create a profile object from the imported data
 const profile = profileData;
 
 // Use the base path from the config
@@ -13,167 +12,116 @@ let profilePicturePath = profile.profile_picture;
 if (baseConfig.base !== '/') {
   profilePicturePath = `${baseConfig.base}/${profile.profile_picture}`;
 }
+
+// Segment the prompt ("irfan@irfansp.dev:~$") into user@host / path / $ parts
+const promptMatch = profile.prompt.match(/^(.*?):(.*)\$$/);
+const promptUserHost = promptMatch ? promptMatch[1] : profile.prompt;
+const promptPath = promptMatch ? promptMatch[2] : '';
 ---
 
 <script id="profile-data" type="application/json" set:html={JSON.stringify(profile)}></script>
 
-<div class="terminal-container">
-  <div class="terminal-header">
-    <div class="terminal-controls">
-      <div class="control close"></div>
-      <div class="control minimize"></div>
-      <div class="control maximize"></div>
+<div class="isp-window isp-window--tilt" id="terminal-window">
+  <div class="isp-window__bar">
+    <div class="isp-window__controls">
+      <span class="isp-window__dot" style="background: var(--traffic-close);"></span>
+      <span class="isp-window__dot" style="background: var(--traffic-min);"></span>
+      <span class="isp-window__dot" style="background: var(--traffic-max);"></span>
     </div>
-    <div class="terminal-title">terminal</div>
+    <div class="isp-window__title">irfan@irfansp.dev — zsh — ~</div>
+    <div class="isp-window__spacer"></div>
   </div>
 
-  <div class="terminal-body">
-    <div class="terminal-content" id="terminal-content">
-      <!-- Welcome Message -->
-      <div class="terminal-line">
-        <span class="terminal-prompt">{profile.prompt}</span>
-        <span class="terminal-command typing-animation">whoami</span>
+  <div class="isp-window__body isp-window__body--scan" id="terminal-body">
+    <div class="isp-shell" id="terminal-shell">
+      <div id="boot-lines"></div>
+
+      <div class="isp-line" id="typing-prompt" hidden>
+        <span class="isp-prompt">{promptUserHost}<span class="isp-prompt__sep">:</span><span class="isp-prompt__path">{promptPath}</span><span class="isp-prompt__sep">$</span></span>
+        <span class="isp-cmd isp-typing" id="typing-cmd">whoami</span>
       </div>
 
-      <div class="section-rule">┌─ WHOAMI ────────────────────────────────────────────────────┐</div>
-
-      <div class="terminal-output">
-        <img
-          src={profilePicturePath}
-          alt="Profile Picture"
-          class="profile-picture"
-          onerror="this.style.display='none'; console.log('Profile picture failed to load:', this.src);"
-          onload="console.log('Profile picture loaded successfully:', this.src);"
-        />
-        {profile.welcome_message && profile.welcome_message.trim() !== '' && (
-          <div class="welcome-message">{profile.welcome_message}</div>
-        )}
-        <div class="name">{profile.name}</div>
-        <div class="title">{profile.title}</div>
-        <div class="bio">{profile.bio}</div>
-        {profile.contact && profile.contact.show_in_welcome && (
-          <div class="contact-info">
-            <div class="contact-label">CONTACT</div>
-            <a href={`mailto:${profile.contact.email}`} class="contact-email">{profile.contact.email}</a>
-          </div>
-        )}
-      </div>
-
-      <!-- Available Commands -->
-      <div class="terminal-line">
-        <span class="terminal-prompt">{profile.prompt}</span>
-        <span class="terminal-command">help</span>
-      </div>
-
-      <div class="section-rule">┌─ HELP ──────────────────────────────────────────────────────┐</div>
-
-      <div class="terminal-output">
-        <div class="command-list">
-          {profile.social_links.map((link) => (
-            <div class="command-item">
-              <span class="command-name">{link.command}</span>
-              <span class="command-description">{link.description}</span>
-            </div>
-          ))}
-          <div class="command-item">
-            <span class="command-name">about</span>
-            <span class="command-description">Display detailed information about me</span>
-          </div>
-          <div class="command-item">
-            <span class="command-name">skills</span>
-            <span class="command-description">Show my technical skills</span>
-          </div>
-          <div class="command-item">
-            <span class="command-name">clear</span>
-            <span class="command-description">Clear terminal and restore welcome state</span>
-          </div>
-          <div class="command-item">
-            <span class="command-name">whoami</span>
-            <span class="command-description">Display user information</span>
+      <section class="isp-hero" id="hero" hidden>
+        <div class="isp-hero__top">
+          <img class="isp-avatar isp-avatar--glow" src={profilePicturePath} width="112" height="112" alt={profile.name} />
+          <div class="isp-hero__id">
+            <h1 class="isp-h-display">{profile.name}<span class="isp-cursor isp-hero__name-cursor">_</span></h1>
+            <div class="isp-eyebrow">{profile.title}</div>
           </div>
         </div>
+
+        <p class="isp-prose isp-prose--dropcap">{profile.bio}</p>
+
+        <div class="isp-hero__actions">
+          <a class="isp-btn isp-btn--primary isp-btn--lg" href={`mailto:${profile.contact.email}`}>✉ {profile.contact.email}</a>
+          <a class="isp-btn isp-btn--ghost isp-btn--lg" href={profile.social_links.find((l) => l.command === 'resume')?.url} target="_blank" rel="noopener noreferrer">↗ resume</a>
+          <button type="button" class="isp-btn isp-btn--bracket isp-btn--lg" id="theme-toggle">theme: crt</button>
+        </div>
+
+        <div class="isp-hero__run">
+          <span class="isp-eyebrow isp-hero__run-label">run</span>
+          {profile.social_links.map((link) => (
+            <span class="isp-chip" data-run={link.command} tabindex="0" role="button">{link.command}</span>
+          ))}
+        </div>
+      </section>
+
+      <div id="entries"></div>
+
+      <div class="isp-input-line" id="input-line" hidden>
+        <span class="isp-prompt">{promptUserHost}<span class="isp-prompt__sep">:</span><span class="isp-prompt__path">{promptPath}</span><span class="isp-prompt__sep">$</span></span>
+        <input type="text" id="cmd-input" class="isp-input" autocomplete="off" spellcheck="false" placeholder="try: about · skills · resume" />
+        <span class="isp-cursor">_</span>
       </div>
 
-      <!-- Interactive Prompt -->
-      <div class="terminal-line interactive-line" id="input-line">
-        <span class="terminal-prompt">{profile.prompt}</span>
-        <input
-          type="text"
-          id="terminal-input"
-          class="terminal-input"
-          autocomplete="off"
-          spellcheck="false"
-          placeholder="Type a command..."
-        />
-        <span class="terminal-cursor">_</span>
-      </div>
-
-      <div class="footer-text">{profile.footer_text}</div>
+      <div class="isp-shell__spacer"></div>
+      <div class="isp-footnote" id="footnote" hidden>Type 'help' for available commands · Tab complete · ↑↓ history</div>
     </div>
   </div>
 </div>
 
-<style>
-  .terminal-container {
+<style is:global>
+  /* ── window chrome ───────────────────────── */
+  .isp-window {
     background: var(--bg-terminal);
-    border-radius: 12px;
-    box-shadow:
-      0 15px 40px rgba(0, 0, 0, 0.9),
-      inset 0 0 0 2px var(--phosphor-soft),
-      inset 0 0 20px rgba(54, 255, 122, 0.05),
-      0 0 18px var(--phosphor-soft);
-    max-width: 1100px;
-    width: 1100px;
-    height: 90vh;
-    height: 90dvh;
-    max-height: 90vh;
-    max-height: 90dvh;
-    margin: 0 auto;
-    font-family: var(--font-mono);
+    border-radius: var(--radius-window);
+    box-shadow: var(--glow-window);
+    border: 1px solid var(--border-window);
     overflow: hidden;
-    position: relative;
-    contain: layout style paint;
-    transform: perspective(1000px) rotateX(0.5deg);
-    border: 1px solid rgba(54, 255, 122, 0.1);
     display: flex;
     flex-direction: column;
+    position: relative;
+    font-family: var(--font-mono);
+    color: var(--phosphor);
+    contain: layout style paint;
+    width: min(var(--window-max), 100%);
+    height: 100%;
   }
-
-  .terminal-header {
-    background: #1c1f1c;
+  .isp-window--tilt { transform: var(--window-tilt); }
+  .isp-window__bar {
+    background: var(--bg-chrome);
     padding: 12px 16px;
     display: flex;
     align-items: center;
-    border-bottom: 1px solid #2a2e2a;
+    gap: var(--sp-3);
+    border-bottom: 1px solid var(--border-chrome);
+    flex-shrink: 0;
   }
-
-  .terminal-controls {
-    display: flex;
-    gap: 8px;
-  }
-
-  .control {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-  }
-
-  .close { background: #ff5f57; }
-  .minimize { background: #ffbd2e; }
-  .maximize { background: #28ca42; }
-
-  .terminal-title {
+  .isp-window__controls { display: flex; gap: 8px; flex-shrink: 0; }
+  .isp-window__dot { width: 12px; height: 12px; border-radius: 50%; }
+  .isp-window__title {
     color: var(--text-muted);
     font-size: var(--fs-sm);
     letter-spacing: var(--tr-wide);
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-
-  .terminal-body {
-    background:
-      radial-gradient(ellipse at center, rgba(0, 30, 10, 0.18) 0%, #000 75%),
-      linear-gradient(0deg, transparent 50%, rgba(54, 255, 122, 0.012) 50%);
+  .isp-window__spacer { width: 52px; flex-shrink: 0; }
+  .isp-window__body {
+    background: var(--crt-vignette), var(--crt-scanlines);
+    background-color: var(--bg-terminal);
     background-size: 100% 100%, 100% 4px;
     color: var(--phosphor);
     padding: var(--sp-5);
@@ -181,844 +129,431 @@ if (baseConfig.base !== '/') {
     font-size: var(--fs-base);
     line-height: var(--lh-base);
     overflow-y: auto;
-    box-sizing: border-box;
     position: relative;
     animation: subtleFlicker 8s ease-in-out infinite alternate;
   }
-
-  /* Moving scanline */
-  .terminal-body::before {
-    content: '';
+  .isp-window__body--scan::before {
+    content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
+    top: 0; left: 0; right: 0;
     height: 1px;
-    background: linear-gradient(90deg,
-      transparent 0%,
-      rgba(54, 255, 122, 0.1) 20%,
-      rgba(54, 255, 122, 0.3) 50%,
-      rgba(54, 255, 122, 0.1) 80%,
-      transparent 100%);
-    opacity: 0.4;
+    background: linear-gradient(90deg, transparent 0%, rgba(54,255,122,.1) 20%, rgba(54,255,122,.3) 50%, rgba(54,255,122,.1) 80%, transparent 100%);
+    opacity: .4;
     animation: scanline 12s linear infinite;
     pointer-events: none;
     z-index: 2;
   }
 
-  .terminal-content {
-    height: 100%;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-  }
+  .isp-shell { min-height: 100%; display: flex; flex-direction: column; }
+  .isp-shell__spacer { flex: 1; }
 
-  .terminal-line {
-    margin-bottom: var(--sp-2);
-    display: flex;
-    align-items: center;
-  }
+  /* ── prompt lines ───────────────────────── */
+  .isp-line { margin-bottom: var(--sp-2); display: flex; align-items: center; flex-wrap: wrap; min-width: 0; animation: fadeUp .18s var(--ease-standard); }
+  .isp-prompt { font-family: var(--font-display); font-weight: var(--fw-regular); color: var(--phosphor); text-shadow: var(--glow-sm); margin-right: var(--sp-2); flex-shrink: 0; white-space: nowrap; }
+  .isp-prompt__sep { color: var(--text-muted); text-shadow: none; }
+  .isp-prompt__path { color: var(--accent-cyan); text-shadow: none; }
+  .isp-cmd { color: var(--text-primary); font-weight: var(--fw-medium); }
+  .isp-typing { display: inline-block; overflow: hidden; border-right: 2px solid var(--phosphor); white-space: nowrap; animation: typing 2s steps(6, end) 1, blinkCaret .75s step-end infinite; }
 
-  .terminal-prompt {
-    font-family: var(--font-display);
-    font-weight: var(--fw-regular);
-    color: var(--phosphor);
-    text-shadow: var(--glow-sm);
-    margin-right: var(--sp-2);
-    flex-shrink: 0;
-  }
+  .isp-boot-line { font-size: var(--fs-sm); line-height: 1.7; color: var(--text-secondary); display: flex; gap: var(--sp-3); animation: fadeUp .18s var(--ease-standard); }
+  .isp-boot-line__ok { color: var(--phosphor); text-shadow: var(--glow-sm); white-space: pre; }
 
-  .terminal-command {
-    color: var(--text-primary);
-    font-weight: var(--fw-medium);
-  }
+  /* ── hero ───────────────────────── */
+  .isp-hero { animation: fadeUp .4s var(--ease-standard); padding: var(--sp-5) 0 var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-5); max-width: 760px; }
+  .isp-hero__top { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-5); }
+  .isp-hero__id { display: flex; flex-direction: column; gap: var(--sp-2); min-width: 0; flex: 1 1 260px; }
+  .isp-hero__name-cursor { margin-left: 2px; }
+  .isp-hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); }
+  .isp-hero__run { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-2) var(--sp-3); font-size: var(--fs-sm); color: var(--text-muted); }
+  .isp-hero__run-label { margin: 0; }
 
-  .terminal-input {
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--text-primary);
-    font-family: inherit;
-    font-size: inherit;
-    font-weight: var(--fw-medium);
-    caret-color: var(--phosphor);
-    flex: 1;
-    padding: 0;
-    margin: 0;
-  }
+  /* ── content ───────────────────────── */
+  .isp-h-display { font-family: var(--font-display); font-size: var(--fs-display); font-weight: var(--fw-black); letter-spacing: var(--tr-display); line-height: var(--lh-tight); color: var(--text-primary); margin: 0; text-wrap: balance; }
+  .isp-h-section { font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--fw-black); letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--phosphor); text-shadow: var(--glow-sm); margin: var(--sp-4) 0 var(--sp-3); }
+  .isp-h-section:first-child { margin-top: 0; }
+  .isp-h-section::before { content: "▸ "; }
+  .isp-eyebrow { font-size: var(--fs-micro); font-weight: var(--fw-medium); letter-spacing: var(--tr-eyebrow); text-transform: uppercase; color: var(--accent-gold); opacity: .85; margin: 0; }
+  .isp-prose { font-family: var(--font-mono); font-size: var(--fs-prose); line-height: var(--lh-prose); font-weight: var(--fw-regular); color: var(--text-primary); max-width: var(--measure-prose); margin: 0; text-wrap: pretty; }
+  .isp-prose--secondary { color: var(--text-secondary); }
+  .isp-prose--dropcap:first-letter { font-family: var(--font-display); font-weight: var(--fw-black); font-size: 2.4em; float: left; line-height: .9; margin: .1em .18em 0 0; color: var(--phosphor); text-shadow: var(--glow-text); }
+  .isp-kv { font-size: var(--fs-base); color: var(--text-secondary); margin: var(--sp-1) 0; display: flex; align-items: baseline; }
+  .isp-kv__label { font-family: var(--font-display); font-size: var(--fs-micro); font-weight: var(--fw-medium); letter-spacing: var(--tr-eyebrow); text-transform: uppercase; color: var(--text-muted); display: inline-block; min-width: 80px; margin-right: var(--sp-3); flex-shrink: 0; }
+  .isp-kv__value { min-width: 0; }
+  .isp-skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--sp-2) var(--sp-5); margin: 0; }
+  .isp-skill { display: flex; align-items: baseline; gap: var(--sp-3); border-bottom: 1px dashed var(--border-dashed); padding-bottom: var(--sp-1); }
+  .isp-skill__num { font-family: var(--font-display); font-size: var(--fs-micro); color: var(--text-muted); letter-spacing: var(--tr-wide); }
+  .isp-skill__name { font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--fw-black); letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--accent-gold); }
+  .isp-chip { color: var(--accent-amber); cursor: pointer; font-family: var(--font-mono); font-size: inherit; font-weight: var(--fw-medium); letter-spacing: var(--tr-tight); padding: 2px 6px; border-radius: var(--radius-chip); background: var(--amber-wash); transition: all var(--dur-base) var(--ease-standard); border: 1px solid var(--amber-line); line-height: inherit; }
+  .isp-chip:hover, .isp-chip:focus-visible { background: var(--amber-wash-strong); border-color: var(--accent-amber); box-shadow: var(--glow-amber); outline: none; }
+  .isp-cmdlist { margin-bottom: var(--sp-4); }
+  .isp-cmditem { margin-bottom: var(--sp-2); padding: var(--sp-1) var(--sp-3); border-left: 2px solid transparent; border-radius: var(--radius-row); transition: all var(--dur-base) var(--ease-standard); display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--sp-2); }
+  .isp-cmditem:hover { background: var(--surface-hover); border-left-color: var(--accent-amber); padding-left: calc(var(--sp-3) + 4px); }
+  .isp-cmditem__desc { font-size: var(--fs-sm); color: var(--text-secondary); }
+  .isp-msg { font-weight: var(--fw-medium); margin: var(--sp-2) 0; }
+  .isp-msg--ok { color: var(--phosphor); text-shadow: var(--glow-sm); }
+  .isp-msg--err { color: var(--accent-error); }
+  .isp-msg--info { color: var(--accent-cyan); }
+  .isp-msg__detail { color: var(--text-secondary); font-weight: var(--fw-regular); margin-top: var(--sp-2); text-shadow: none; }
+  .isp-avatar { object-fit: cover; border-radius: 50%; display: block; border: 2px solid var(--phosphor); box-shadow: var(--glow-avatar); transition: transform var(--dur-base) var(--ease-standard); }
+  .isp-avatar--glow { animation: profileGlow 5s ease-in-out infinite alternate; }
+  .isp-avatar:hover { transform: scale(1.03); animation-play-state: paused; }
+  .isp-footnote { font-family: var(--font-display); font-size: var(--fs-micro); font-weight: var(--fw-medium); letter-spacing: var(--tr-eyebrow); text-transform: uppercase; color: var(--text-muted); text-align: center; margin-top: var(--sp-6); }
 
-  .terminal-input::placeholder {
-    color: var(--text-muted);
-  }
+  .isp-output { padding: var(--sp-4); margin-bottom: var(--sp-4); background: var(--surface-output); border-radius: var(--radius-block); border-left: 2px solid var(--border-output); animation: fadeUp .2s var(--ease-standard); }
+  .isp-output--ok { border-left-color: var(--phosphor); }
+  .isp-output--err { border-left-color: var(--accent-error); }
+  .isp-output--info { border-left-color: var(--accent-cyan); }
+  .isp-entry { margin-top: var(--sp-4); animation: fadeUp .2s var(--ease-standard); }
 
-  .terminal-output {
-    padding: var(--sp-4);
-    margin-bottom: var(--sp-4);
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 4px;
-    border-left: 2px solid rgba(54, 255, 122, 0.2);
-  }
+  /* ── input ───────────────────────── */
+  .isp-input-line { margin-top: var(--sp-5); padding: var(--sp-2) 0; display: flex; align-items: center; }
+  .isp-input { background: transparent; border: none; outline: none; color: var(--text-primary); font-family: inherit; font-size: inherit; font-weight: var(--fw-medium); caret-color: var(--phosphor); flex: 1; padding: 0; margin: 0; min-width: 0; }
+  .isp-input::placeholder { color: var(--text-muted); }
+  .isp-cursor { color: var(--phosphor); animation: cursorBlink 1s infinite; margin-left: 4px; text-shadow: var(--cursor-glow); }
 
-  /* ASCII section rule */
-  .section-rule {
-    font-family: var(--font-mono);
-    font-size: var(--fs-base);
-    color: var(--phosphor);
-    text-shadow: var(--glow-sm);
-    letter-spacing: 0;
-    white-space: pre;
-    overflow: hidden;
-    margin: var(--sp-5) 0 var(--sp-3);
-    user-select: none;
-    opacity: 0.85;
-  }
-
-  .welcome-message {
-    color: var(--phosphor);
-    font-size: var(--fs-md);
-    font-weight: var(--fw-medium);
-    text-shadow: var(--glow-sm);
-    margin-bottom: var(--sp-2);
-  }
-
-  .name {
-    font-family: var(--font-display);
-    font-size: var(--fs-display);
-    font-weight: var(--fw-black);
-    letter-spacing: var(--tr-display);
-    line-height: var(--lh-tight);
-    color: var(--text-primary);
-    margin: var(--sp-3) 0 var(--sp-2);
-  }
-
-  .title {
-    font-size: var(--fs-micro);
-    font-weight: var(--fw-medium);
-    letter-spacing: var(--tr-eyebrow);
-    text-transform: uppercase;
-    color: var(--accent-gold);
-    opacity: 0.85;
-    margin-bottom: var(--sp-4);
-  }
-
-  .bio {
-    font-family: var(--font-mono);
-    font-size: var(--fs-prose);
-    line-height: var(--lh-prose);
-    font-weight: var(--fw-regular);
-    color: var(--text-primary);
-    max-width: 64ch;
-    margin: 0 0 var(--sp-4);
-  }
-
-  .bio::first-letter {
-    font-family: var(--font-display);
-    font-weight: var(--fw-black);
-    font-size: 2.4em;
-    float: left;
-    line-height: 0.9;
-    margin: 0.1em 0.18em 0 0;
-    color: var(--phosphor);
-    text-shadow: 0 0 8px var(--phosphor-dim);
-  }
-
-  .about-extended {
-    font-family: var(--font-mono);
-    font-size: var(--fs-prose);
-    line-height: var(--lh-prose);
-    color: var(--text-secondary);
-    max-width: 64ch;
-    margin-top: var(--sp-4);
-  }
-
-  .contact-info {
-    margin-top: var(--sp-4);
-    padding: var(--sp-3) var(--sp-4);
-    background: rgba(54, 255, 122, 0.04);
-    border-left: 2px solid var(--phosphor);
-    border-radius: 4px;
-  }
-
-  .contact-label {
-    font-size: var(--fs-micro);
-    font-weight: var(--fw-medium);
-    letter-spacing: var(--tr-eyebrow);
-    text-transform: uppercase;
-    color: var(--phosphor);
-    text-shadow: var(--glow-sm);
-    margin-bottom: var(--sp-2);
-  }
-
-  .contact-email {
-    color: var(--text-primary);
-    font-size: var(--fs-base);
-    font-weight: var(--fw-medium);
-    background: rgba(255, 217, 102, 0.06);
-    border: 1px solid rgba(255, 217, 102, 0.3);
-    padding: 4px 10px;
-    border-radius: 4px;
-    display: inline-block;
-    text-decoration: none;
-    transition: all 240ms cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: pointer;
-  }
-
-  .contact-email:hover {
-    background: rgba(255, 217, 102, 0.14);
-    border-color: var(--accent-gold);
-    color: var(--accent-gold);
-    transform: translateY(-1px);
-  }
-
-  .command-list {
-    margin-bottom: var(--sp-4);
-  }
-
-  .command-header {
-    font-size: var(--fs-md);
-    font-weight: var(--fw-semi);
-    letter-spacing: var(--tr-wide);
-    text-transform: uppercase;
-    color: var(--phosphor);
-    text-shadow: var(--glow-sm);
-    margin-bottom: var(--sp-3);
-  }
-
-  .command-item {
-    margin-bottom: var(--sp-2);
-    padding: var(--sp-1) var(--sp-3);
-    border-left: 2px solid transparent;
-    border-radius: 2px;
-    transition: all 240ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .command-item:hover {
-    background: rgba(255, 180, 84, 0.05);
-    border-left-color: var(--accent-amber);
-    padding-left: calc(var(--sp-3) + 4px);
-  }
-
-  .command-name {
-    color: var(--accent-amber);
-    cursor: pointer;
-    font-weight: var(--fw-medium);
-    letter-spacing: var(--tr-tight);
-    padding: 2px 6px;
-    border-radius: 3px;
-    background: rgba(255, 180, 84, 0.08);
-    transition: all 240ms cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(255, 180, 84, 0.2);
-    margin-right: var(--sp-2);
-  }
-
-  .command-name:hover {
-    background: rgba(255, 180, 84, 0.18);
-    border-color: var(--accent-amber);
-    box-shadow: 0 0 8px rgba(255, 180, 84, 0.35);
-  }
-
-  .command-description {
-    font-size: var(--fs-sm);
-    color: var(--text-secondary);
-    font-weight: var(--fw-regular);
-  }
-
-  /* Help command output */
-  .help-container {
-    padding: 0;
-  }
-
-  .help-title {
-    font-family: var(--font-display);
-    font-size: var(--fs-lg);
-    font-weight: var(--fw-black);
-    letter-spacing: var(--tr-eyebrow);
-    text-transform: uppercase;
-    color: var(--phosphor);
-    text-shadow: 0 0 8px var(--phosphor-dim);
-    text-align: left;
-    border: none;
-    padding: 0;
-    margin: 0 0 var(--sp-5);
-  }
-
-  .help-section {
-    margin-bottom: var(--sp-5);
-  }
-
-  .help-section:last-of-type {
-    margin-bottom: var(--sp-2);
-  }
-
-  .help-header {
-    font-family: var(--font-display);
-    font-size: var(--fs-sm);
-    font-weight: var(--fw-black);
-    letter-spacing: var(--tr-wide);
-    text-transform: uppercase;
-    color: var(--phosphor);
-    text-shadow: var(--glow-sm);
-    margin: 0 0 var(--sp-3);
-  }
-
-  .help-header::before {
-    content: "▸ ";
-    color: var(--phosphor);
-  }
-
-  .help-command {
-    margin: var(--sp-1) 0;
-    padding-left: var(--sp-4);
-    display: flex;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: var(--sp-2);
-    font-size: var(--fs-sm);
-  }
-
-  .command-icon {
-    color: var(--phosphor);
-    opacity: 0.6;
-  }
-
-  .command-separator {
-    color: var(--text-muted);
-  }
-
-  .command-desc {
-    color: var(--text-secondary);
-  }
-
-  .command-url {
-    color: #889988;
-    font-style: italic;
-    font-size: var(--fs-micro);
-  }
-
-  /* Skills */
-  .skills-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--sp-2) var(--sp-5);
-    margin-top: var(--sp-3);
-  }
-
-  .skill-row {
-    display: flex;
-    align-items: baseline;
-    gap: var(--sp-3);
-    border-bottom: 1px dashed rgba(54, 255, 122, 0.15);
-    padding-bottom: var(--sp-1);
-  }
-
-  .skill-num {
-    font-family: var(--font-display);
-    font-size: var(--fs-micro);
-    font-weight: var(--fw-regular);
-    color: var(--text-muted);
-    letter-spacing: var(--tr-wide);
-  }
-
-  .skill-name {
-    font-family: var(--font-display);
-    font-size: var(--fs-sm);
-    font-weight: var(--fw-black);
-    letter-spacing: var(--tr-wide);
-    text-transform: uppercase;
-    color: var(--accent-gold);
-  }
-
-  /* Whoami output */
-  .whoami-row {
-    font-size: var(--fs-base);
-    color: var(--text-secondary);
-    margin: var(--sp-1) 0;
-  }
-
-  .whoami-label {
-    font-family: var(--font-display);
-    font-size: var(--fs-micro);
-    font-weight: var(--fw-medium);
-    letter-spacing: var(--tr-eyebrow);
-    text-transform: uppercase;
-    color: var(--text-muted);
-    display: inline-block;
-    min-width: 80px;
-    margin-right: var(--sp-3);
-  }
-
-  .interactive-line {
-    margin-top: var(--sp-5);
-    padding: var(--sp-2) 0;
-  }
-
-  .terminal-cursor {
-    color: var(--phosphor);
-    animation: cursorBlink 1s infinite;
-    margin-left: 4px;
-    text-shadow: var(--cursor-glow);
-  }
-
-  @keyframes cursorBlink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
-  }
-
-  @keyframes subtleFlicker {
-    0%, 98% { opacity: 1; }
-    99% { opacity: 0.98; }
-    100% { opacity: 1; }
-  }
-
-  @keyframes profileGlow {
-    0% {
-      box-shadow:
-        0 0 15px rgba(54, 255, 122, 0.4),
-        0 0 30px rgba(54, 255, 122, 0.2),
-        inset 0 0 10px rgba(54, 255, 122, 0.1);
-    }
-    100% {
-      box-shadow:
-        0 0 25px rgba(54, 255, 122, 0.6),
-        0 0 50px rgba(54, 255, 122, 0.3),
-        inset 0 0 15px rgba(54, 255, 122, 0.15);
-    }
-  }
-
-  @keyframes scanline {
-    0%   { top: -2px; opacity: 1; }
-    50%  { opacity: 0.6; }
-    100% { top: 100%; opacity: 0; }
-  }
-
-  .typing-animation {
-    overflow: hidden;
-    border-right: 2px solid var(--phosphor);
-    white-space: nowrap;
-    animation: typing 2s steps(6, end), blink-caret 0.75s step-end infinite;
-  }
-
-  @keyframes typing {
-    from { width: 0; }
-    to   { width: 100%; }
-  }
-
-  @keyframes blink-caret {
-    from, to { border-color: transparent; }
-    50%      { border-color: var(--phosphor); }
-  }
-
-  .footer-text {
-    font-family: var(--font-display);
-    font-size: var(--fs-micro);
-    font-weight: var(--fw-medium);
-    letter-spacing: var(--tr-eyebrow);
-    text-transform: uppercase;
-    color: var(--text-muted);
-    text-align: center;
-    margin-top: var(--sp-6);
-  }
-
-  .error-message {
-    color: var(--accent-error);
-    font-weight: var(--fw-medium);
-    margin: var(--sp-2) 0;
-  }
-
-  .success-message {
-    color: var(--phosphor);
-    font-weight: var(--fw-medium);
-    text-shadow: var(--glow-sm);
-    margin: var(--sp-2) 0;
-  }
-
-  .terminal-url-link {
-    color: var(--accent-cyan);
-    text-decoration: underline;
-    transition: color 200ms ease;
-  }
-
-  .terminal-url-link:hover {
-    color: #a0e4ff;
-  }
-
-  .profile-picture {
-    max-width: 180px;
-    width: 180px;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 50%;
-    display: block;
-    margin: 0 auto var(--sp-5);
-    border: 2px solid var(--phosphor);
-    box-shadow:
-      0 0 10px rgba(54, 255, 122, 0.3),
-      0 0 20px rgba(54, 255, 122, 0.1),
-      inset 0 0 5px rgba(54, 255, 122, 0.05);
-    transition: transform 240ms cubic-bezier(0.4, 0, 0.2, 1);
-    animation: profileGlow 5s ease-in-out infinite alternate;
-  }
-
-  .profile-picture:hover {
-    transform: scale(1.03);
-    animation-play-state: paused;
-  }
-
-  /* Responsive */
-  @media (max-width: 1200px) {
-    .terminal-container {
-      width: 95vw;
-      max-width: 1100px;
-      height: 95vh;
-      height: 95dvh;
-      max-height: 95vh;
-      max-height: 95dvh;
-    }
-  }
+  /* ── buttons ───────────────────────── */
+  .isp-btn { font-family: var(--font-mono); font-weight: var(--fw-medium); letter-spacing: var(--tr-tight); border-radius: var(--radius-chip); border: 1px solid transparent; cursor: pointer; display: inline-flex; align-items: center; gap: var(--sp-2); transition: all var(--dur-base) var(--ease-standard); white-space: nowrap; line-height: 1.4; text-decoration: none; }
+  .isp-btn:active { transform: translateY(1px); }
+  .isp-btn:focus-visible { outline: 1px dashed var(--phosphor); outline-offset: 3px; }
+  .isp-btn--lg { font-size: var(--fs-base); padding: 10px 18px; }
+  .isp-btn--primary { background: var(--phosphor); color: var(--accent-contrast); border-color: var(--phosphor); font-weight: var(--fw-semi); }
+  .isp-btn--primary:hover { box-shadow: 0 0 12px var(--phosphor-dim); filter: brightness(1.08); }
+  .isp-btn--ghost { background: transparent; color: var(--phosphor); border-color: var(--phosphor-soft); }
+  .isp-btn--ghost:hover { background: var(--phosphor-ghost); border-color: var(--phosphor); text-shadow: var(--glow-sm); }
+  .isp-btn--bracket { background: transparent; color: var(--text-primary); border-color: transparent; padding-left: 0; padding-right: 0; }
+  .isp-btn--bracket::before { content: "["; color: var(--text-muted); transition: inherit; }
+  .isp-btn--bracket::after { content: "]"; color: var(--text-muted); transition: inherit; }
+  .isp-btn--bracket:hover { color: var(--phosphor); text-shadow: var(--glow-sm); }
+  .isp-btn--bracket:hover::before, .isp-btn--bracket:hover::after { color: var(--phosphor); }
 
   @media (max-width: 968px) {
-    .terminal-container {
-      width: 95vw;
-      max-width: 95vw;
-      height: 95vh;
-      height: 95dvh;
-      max-height: 95vh;
-      max-height: 95dvh;
-      margin: 0;
-      border-radius: 8px;
-      transform: none;
-    }
-
-    .terminal-body {
-      padding: var(--sp-4);
-    }
-
-    .name { font-size: 2.25rem; }
-    .section-rule { font-size: var(--fs-sm); }
+    .isp-window { border-radius: var(--radius-window-sm); }
+    .isp-window--tilt { transform: none; }
+    .isp-window__body { padding: var(--sp-4); }
+    .isp-h-display { font-size: 2.25rem; }
   }
-
   @media (max-width: 768px) {
-    .name { font-size: 2rem; }
-    .command-item {
-      flex-direction: column;
-      gap: var(--sp-1);
-    }
-    .profile-picture {
-      max-width: 130px;
-      width: 130px;
-      height: 130px;
-    }
-    .section-rule {
-      font-size: var(--fs-xs, 11px);
-    }
-    .bio::first-letter {
-      font-size: 2em;
-    }
+    .isp-h-display { font-size: 2rem; }
+    .isp-cmditem { flex-direction: column; gap: var(--sp-1); }
+    .isp-prose--dropcap:first-letter { font-size: 2em; }
   }
-
-  /* Accessibility */
-  @media (prefers-reduced-motion: reduce) {
-    .typing-animation { animation: none; border-right: none; }
-    .terminal-cursor { animation: none; }
-    .terminal-container { animation: none; transform: none; }
-    .profile-picture { animation: none; }
-    .terminal-body { animation: none; }
-    .terminal-body::before { animation: none; }
-    .command-item, .command-name, .contact-email, .profile-picture { transition: none; }
-  }
-
   @media (prefers-contrast: high) {
-    .terminal-container { border: 2px solid #fff; }
-    .command-name { border-color: #fff; }
+    .isp-window { border: 2px solid #fff; }
+    .isp-chip { border-color: #fff; }
   }
 </style>
 
 <script>
-  // Import profile data from JSON file
-  const profileDataElement = document.getElementById('profile-data');
-  const profileData = profileDataElement ? JSON.parse(profileDataElement.textContent || '{}') : {};
+  type SocialLink = { label: string; url: string; command: string; description: string };
+  type Profile = {
+    name: string;
+    title: string;
+    bio: string;
+    contact: { email: string; show_in_welcome: boolean };
+    prompt: string;
+    social_links: SocialLink[];
+    skills: string[];
+    about_extended: string;
+    whoami_info: { status: string; location: string };
+  };
 
-  // Command history
-  let commandHistory = [];
-  let historyIndex = -1;
+  const profileDataEl = document.getElementById('profile-data');
+  const profile: Profile = profileDataEl ? JSON.parse(profileDataEl.textContent || '{}') : ({} as Profile);
 
-  // Get terminal elements
-  const terminalInput = document.getElementById('terminal-input');
-  const terminalContent = document.getElementById('terminal-content');
-  const inputLine = document.getElementById('input-line');
+  const BOOT = ['loading profile.json', 'mounting ~/resume → resume.irfansp.dev', 'starting shell · zsh'];
+  const LINKS = profile.social_links || [];
+  const SKILLS = profile.skills || [];
+  const HELP_SYSTEM = [
+    { command: 'theme', description: 'Toggle CRT / paper theme' },
+    { command: 'history', description: 'Show command history' },
+    { command: 'boot', description: 'Replay the boot sequence' },
+    { command: 'clear', description: 'Clear terminal and restore welcome state' },
+  ];
+  const HELP_INFO = [
+    { command: 'about', description: 'Display detailed information about me' },
+    { command: 'whoami', description: 'Display user information' },
+    { command: 'skills', description: 'Show my technical skills' },
+  ];
+  const COMPLETIONS = [...HELP_INFO.map((h) => h.command), ...LINKS.map((l) => l.command), 'help', 'history', 'boot', 'theme', 'clear'];
 
-  // Store original welcome content for restoration after clear
-  let originalWelcomeContent: Element[] = [];
+  const THEME_KEY = 'isp-theme-mode';
+  let mode: 'os' | 'crt' | 'paper' = (localStorage.getItem(THEME_KEY) as 'os' | 'crt' | 'paper') || 'os';
 
-  function storeOriginalContent() {
-    const children = Array.from(terminalContent.children);
-    originalWelcomeContent = children.filter(child =>
-      child.id !== 'input-line' &&
-      !child.classList.contains('footer-text')
-    ).map(element => element.cloneNode(true) as Element);
+  let history: string[] = [];
+  let historyCursor = -1;
+  const timers: number[] = [];
+
+  const bodyEl = document.getElementById('terminal-body') as HTMLElement;
+  const bootLinesEl = document.getElementById('boot-lines') as HTMLElement;
+  const typingPromptEl = document.getElementById('typing-prompt') as HTMLElement;
+  const typingCmdEl = document.getElementById('typing-cmd') as HTMLElement;
+  const heroEl = document.getElementById('hero') as HTMLElement;
+  const entriesEl = document.getElementById('entries') as HTMLElement;
+  const inputLineEl = document.getElementById('input-line') as HTMLElement;
+  const footnoteEl = document.getElementById('footnote') as HTMLElement;
+  const inputEl = document.getElementById('cmd-input') as HTMLInputElement;
+  const themeToggleEl = document.getElementById('theme-toggle') as HTMLButtonElement;
+
+  function escapeHtml(s: string): string {
+    return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string));
   }
 
-  document.addEventListener('click', (e) => {
-    if (e.target.closest('.terminal-container')) {
-      terminalInput?.focus();
-    }
-  });
-
-  document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-      storeOriginalContent();
-    }, 100);
-  });
-
-  terminalInput?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      const command = terminalInput.value.trim().toLowerCase();
-      if (command) {
-        executeCommand(command);
-        commandHistory.unshift(command);
-        historyIndex = -1;
-      }
-      terminalInput.value = '';
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      if (historyIndex < commandHistory.length - 1) {
-        historyIndex++;
-        terminalInput.value = commandHistory[historyIndex];
-      }
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      if (historyIndex > 0) {
-        historyIndex--;
-        terminalInput.value = commandHistory[historyIndex];
-      } else if (historyIndex === 0) {
-        historyIndex = -1;
-        terminalInput.value = '';
-      }
-    }
-  });
-
-  function executeCommand(command: string) {
-    addToTerminal(`<div class="terminal-line">
-      <span class="terminal-prompt">${profileData.prompt}</span>
-      <span class="terminal-command">${command}</span>
-    </div>`);
-
-    switch (command) {
-      case 'help':
-        showHelp();
-        break;
-      case 'about':
-        showAbout();
-        break;
-      case 'whoami':
-        showWhoami();
-        break;
-      case 'skills':
-        showSkills();
-        break;
-      case 'clear':
-        clearTerminal();
-        return;
-      case 'github':
-      case 'linkedin':
-      case 'resume':
-      case 'til':
-      case 'devtools':
-      case 'instagram':
-        openLink(command);
-        break;
-      default:
-        showError(command);
-    }
-
-    scrollToBottom();
+  function isPaper(): boolean {
+    if (mode === 'paper') return true;
+    if (mode === 'crt') return false;
+    return window.matchMedia('(prefers-color-scheme: light)').matches;
   }
 
-  function addToTerminal(html: string) {
-    const div = document.createElement('div');
-    div.innerHTML = html;
-    while (div.firstElementChild) {
-      inputLine.parentNode?.insertBefore(div.firstElementChild, inputLine);
-    }
-  }
-
-  function sectionRule(label: string) {
-    const dashCount = Math.max(4, 58 - label.length);
-    return `<div class="section-rule">┌─ ${label} ${'─'.repeat(dashCount)}┐</div>`;
-  }
-
-  function showHelp() {
-    const socialLinksHTML = profileData.social_links ? profileData.social_links.map((link: { command: string, label: string, url: string }) => {
-      return `<div class="help-command"><span class="command-icon">→</span><span class="command-name">${link.command}</span><span class="command-separator">·</span><span class="command-desc">Open ${link.label}</span><span class="command-url">${link.url}</span></div>`;
-    }).join('') : '';
-
-    const helpText = `
-      ${sectionRule('HELP')}
-      <div class="terminal-output help-container">
-        <div class="help-title">Terminal Help</div>
-
-        <div class="help-section">
-          <div class="help-header">Information</div>
-          <div class="help-command"><span class="command-icon">→</span><span class="command-name">about</span><span class="command-separator">·</span><span class="command-desc">Display detailed information about me</span></div>
-          <div class="help-command"><span class="command-icon">→</span><span class="command-name">whoami</span><span class="command-separator">·</span><span class="command-desc">Display user information</span></div>
-          <div class="help-command"><span class="command-icon">→</span><span class="command-name">skills</span><span class="command-separator">·</span><span class="command-desc">Show my technical skills</span></div>
-        </div>
-
-        <div class="help-section">
-          <div class="help-header">External Links</div>
-          ${socialLinksHTML}
-        </div>
-
-        <div class="help-section">
-          <div class="help-header">Terminal Controls</div>
-          <div class="help-command"><span class="command-icon">→</span><span class="command-name">clear</span><span class="command-separator">·</span><span class="command-desc">Clear terminal and restore welcome state</span></div>
-          <div class="help-command"><span class="command-icon">→</span><span class="command-name">help</span><span class="command-separator">·</span><span class="command-desc">Display this help menu</span></div>
-        </div>
-
-        <div class="help-section">
-          <div class="help-header">Keyboard Shortcuts</div>
-          <div class="help-command"><span class="command-icon">→</span><span class="command-name">↑/↓</span><span class="command-separator">·</span><span class="command-desc">Navigate command history</span></div>
-          <div class="help-command"><span class="command-icon">→</span><span class="command-name">Tab</span><span class="command-separator">·</span><span class="command-desc">Enable keyboard navigation</span></div>
-        </div>
-      </div>`;
-
-    addToTerminal(helpText);
-  }
-
-  function showAbout() {
-    const aboutText = `
-      ${sectionRule('ABOUT')}
-      <div class="terminal-output">
-        <div class="name">${profileData.name}</div>
-        <div class="title">${profileData.title}</div>
-        <div class="bio">${profileData.bio}</div>
-        <div class="about-extended">${profileData.about_extended}</div>
-      </div>
-    `;
-    addToTerminal(aboutText);
-  }
-
-  function showWhoami() {
-    const whoamiText = `
-      ${sectionRule('WHOAMI')}
-      <div class="terminal-output">
-        <div class="success-message">User · ${profileData.name}</div>
-        <div class="whoami-row"><span class="whoami-label">Role</span>${profileData.title}</div>
-        <div class="whoami-row"><span class="whoami-label">Status</span>${profileData.whoami_info.status}</div>
-        <div class="whoami-row"><span class="whoami-label">Location</span>${profileData.whoami_info.location}</div>
-      </div>
-    `;
-    addToTerminal(whoamiText);
-  }
-
-  function showSkills() {
-    const rows = profileData.skills.map((skill: string, i: number) => {
-      const num = String(i + 1).padStart(2, '0');
-      return `<div class="skill-row"><span class="skill-num">${num}</span><span class="skill-name">${skill}</span></div>`;
-    }).join('');
-
-    const skillsText = `
-      ${sectionRule('SKILLS')}
-      <div class="terminal-output">
-        <div class="command-header">Technical Skills</div>
-        <div class="skills-list">${rows}</div>
-      </div>
-    `;
-    addToTerminal(skillsText);
-  }
-
-  function openLink(command: string) {
-    const link = profileData.social_links.find((l: { command: string }) => l.command === command);
-    if (link) {
-      addToTerminal(`
-        <div class="terminal-output">
-          <div class="success-message">Opening ${link.label}...</div>
-          <div class="whoami-row" style="margin-top:8px;">Please go to <a href="${link.url}" target="_blank" class="terminal-url-link">${link.url}</a> if it doesn't open automatically.</div>
-        </div>
-      `);
-      setTimeout(() => {
-        window.open(link.url, '_blank');
-      }, 500);
-    }
-  }
-
-  function showError(command: string) {
-    addToTerminal(`
-      <div class="terminal-output">
-        <div class="error-message">Command not found · ${command}</div>
-        <div class="whoami-row" style="margin-top:8px;">Type <span class="command-name">help</span> to see available commands.</div>
-      </div>
-    `);
-  }
-
-  function clearTerminal() {
-    addToTerminal(`
-      <div class="terminal-output">
-        <div class="success-message">Clearing terminal and restoring welcome state...</div>
-      </div>
-    `);
-
-    setTimeout(() => {
-      const children = Array.from(terminalContent.children);
-      children.forEach(child => {
-        if (child.id !== 'input-line' && !child.classList.contains('footer-text')) {
-          child.remove();
-        }
-      });
-
-      restoreWelcomeState();
-    }, 300);
-  }
-
-  function restoreWelcomeState() {
-    const inputLineElement = document.getElementById('input-line');
-    const parent = inputLineElement?.parentNode;
-
-    if (parent && inputLineElement && originalWelcomeContent.length > 0) {
-      originalWelcomeContent.forEach(element => {
-        const clonedElement = element.cloneNode(true) as Element;
-        parent.insertBefore(clonedElement, inputLineElement);
-      });
-
-      setTimeout(() => {
-        setupClickToCopy();
-      }, 100);
-    }
-
-    setTimeout(scrollToBottom, 200);
+  function applyTheme() {
+    if (isPaper()) document.documentElement.setAttribute('data-theme', 'paper');
+    else document.documentElement.removeAttribute('data-theme');
+    if (themeToggleEl) themeToggleEl.textContent = isPaper() ? 'theme: paper' : 'theme: crt';
   }
 
   function scrollToBottom() {
-    const isNearBottom = terminalContent.scrollTop + terminalContent.clientHeight >= terminalContent.scrollHeight - 100;
-    if (isNearBottom) {
-      terminalContent.scrollTop = terminalContent.scrollHeight;
-    }
+    requestAnimationFrame(() => { bodyEl.scrollTop = bodyEl.scrollHeight; });
   }
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Tab') {
-      const links = document.querySelectorAll('.terminal-link');
-      links.forEach(link => {
-        link.setAttribute('tabindex', '0');
+  function focusSoon() {
+    setTimeout(() => inputEl?.focus({ preventScroll: true }), 30);
+  }
+
+  function clearTimers() {
+    timers.forEach((t) => clearTimeout(t));
+    timers.length = 0;
+  }
+
+  function boot(skip: boolean) {
+    clearTimers();
+    entriesEl.innerHTML = '';
+    bootLinesEl.innerHTML = '';
+    typingPromptEl.hidden = true;
+    heroEl.hidden = true;
+    inputLineEl.hidden = true;
+    footnoteEl.hidden = true;
+
+    if (skip) {
+      bootLinesEl.innerHTML = BOOT.map(bootLineHtml).join('');
+      showReady();
+      return;
+    }
+
+    const at = (ms: number, fn: () => void) => timers.push(window.setTimeout(fn, ms));
+    BOOT.forEach((line, i) => {
+      at(220 + i * 260, () => {
+        bootLinesEl.insertAdjacentHTML('beforeend', bootLineHtml(line));
+        scrollToBottom();
       });
+    });
+    const t = 220 + BOOT.length * 260 + 120;
+    at(t, () => {
+      typingPromptEl.hidden = false;
+      typingCmdEl.classList.add('isp-typing');
+      scrollToBottom();
+    });
+    at(t + 2100, showReady);
+  }
+
+  function bootLineHtml(line: string): string {
+    return `<div class="isp-boot-line"><span class="isp-boot-line__ok">[ OK ]</span><span>${escapeHtml(line)}</span></div>`;
+  }
+
+  function showReady() {
+    heroEl.hidden = false;
+    inputLineEl.hidden = false;
+    footnoteEl.hidden = false;
+    applyTheme();
+    focusSoon();
+    // Focusing the input can trigger the browser's own scroll-into-view
+    // (some mobile engines ignore preventScroll); force back to the top
+    // since there are no command entries yet to scroll toward.
+    setTimeout(() => { bodyEl.scrollTop = 0; }, 60);
+  }
+
+  function promptLineHtml(cmd: string): string {
+    return `<div class="isp-line">
+      <span class="isp-prompt">${escapeHtml(profile.prompt.split(':')[0] || '')}<span class="isp-prompt__sep">:</span><span class="isp-prompt__path">~</span><span class="isp-prompt__sep">$</span></span>
+      <span class="isp-cmd">${escapeHtml(cmd)}</span>
+    </div>`;
+  }
+
+  function renderHelp(): string {
+    const item = (c: { command: string; description: string }) =>
+      `<div class="isp-cmditem"><span class="isp-chip" data-run="${escapeHtml(c.command)}" tabindex="0" role="button">${escapeHtml(c.command)}</span><span class="isp-cmditem__desc">${escapeHtml(c.description)}</span></div>`;
+    return `<div class="isp-output">
+      <div class="isp-h-section">Information</div>
+      <div class="isp-cmdlist">${HELP_INFO.map(item).join('')}</div>
+      <div class="isp-h-section">External Links</div>
+      <div class="isp-cmdlist">${LINKS.map((l) => item({ command: l.command, description: `Open ${l.label}` })).join('')}</div>
+      <div class="isp-h-section">System</div>
+      <div class="isp-cmdlist" style="margin-bottom:0">${HELP_SYSTEM.map(item).join('')}</div>
+    </div>`;
+  }
+
+  function renderAbout(): string {
+    return `<div class="isp-output"><div class="isp-prose isp-prose--secondary">${escapeHtml(profile.about_extended)}</div></div>`;
+  }
+
+  function renderWhoami(): string {
+    return `<div class="isp-output">
+      <div class="isp-msg isp-msg--ok">User · ${escapeHtml(profile.name)}</div>
+      <div class="isp-kv"><span class="isp-kv__label">Role</span><span class="isp-kv__value">${escapeHtml(profile.title)}</span></div>
+      <div class="isp-kv"><span class="isp-kv__label">Status</span><span class="isp-kv__value">${escapeHtml(profile.whoami_info.status)}</span></div>
+      <div class="isp-kv"><span class="isp-kv__label">Location</span><span class="isp-kv__value">${escapeHtml(profile.whoami_info.location)}</span></div>
+    </div>`;
+  }
+
+  function renderSkills(): string {
+    return `<div class="isp-output"><div class="isp-skills">${SKILLS.map(
+      (s, i) => `<div class="isp-skill"><span class="isp-skill__num">${String(i + 1).padStart(2, '0')}</span><span class="isp-skill__name">${escapeHtml(s)}</span></div>`
+    ).join('')}</div></div>`;
+  }
+
+  function renderHistory(): string {
+    const reversed = history.slice().reverse();
+    return `<div class="isp-output">${reversed.map(
+      (c, i) => `<div class="isp-kv"><span class="isp-kv__label" style="min-width:3ch;text-align:right">${i + 1}</span><span class="isp-kv__value">${escapeHtml(c)}</span></div>`
+    ).join('')}</div>`;
+  }
+
+  function renderOpen(link: SocialLink): string {
+    return `<div class="isp-output isp-output--ok"><div class="isp-msg isp-msg--ok">Opening ${escapeHtml(link.label)}...<div class="isp-msg__detail">→ ${escapeHtml(link.url)}</div></div></div>`;
+  }
+
+  function renderTheme(next: string): string {
+    return `<div class="isp-output isp-output--info"><div class="isp-msg isp-msg--info">theme → ${escapeHtml(next)}</div></div>`;
+  }
+
+  function renderError(cmd: string): string {
+    return `<div class="isp-output isp-output--err"><div class="isp-msg isp-msg--err">Command not found · ${escapeHtml(cmd)}<div class="isp-msg__detail">Type 'help' for available commands</div></div></div>`;
+  }
+
+  function appendEntry(cmd: string, outputHtml: string) {
+    const wrap = document.createElement('div');
+    wrap.className = 'isp-entry';
+    wrap.innerHTML = promptLineHtml(cmd) + outputHtml;
+    entriesEl.appendChild(wrap);
+    scrollToBottom();
+  }
+
+  function run(raw: string) {
+    const cmd = String(raw || '').trim().toLowerCase();
+    if (!cmd) return;
+    history = [cmd, ...history];
+    historyCursor = -1;
+
+    if (cmd === 'clear') {
+      entriesEl.innerHTML = '';
+      inputEl.value = '';
+      focusSoon();
+      return;
+    }
+    if (cmd === 'boot') {
+      inputEl.value = '';
+      boot(false);
+      return;
+    }
+    if (cmd === 'theme') {
+      const next = isPaper() ? 'crt' : 'paper';
+      mode = next;
+      localStorage.setItem(THEME_KEY, next);
+      applyTheme();
+      appendEntry(cmd, renderTheme(next));
+      inputEl.value = '';
+      focusSoon();
+      return;
+    }
+
+    const link = LINKS.find((l) => l.command === cmd);
+    if (link) {
+      window.open(link.url, '_blank', 'noopener');
+      appendEntry(cmd, renderOpen(link));
+    } else if (cmd === 'help') {
+      appendEntry(cmd, renderHelp());
+    } else if (cmd === 'about') {
+      appendEntry(cmd, renderAbout());
+    } else if (cmd === 'whoami') {
+      appendEntry(cmd, renderWhoami());
+    } else if (cmd === 'skills') {
+      appendEntry(cmd, renderSkills());
+    } else if (cmd === 'history') {
+      appendEntry(cmd, renderHistory());
+    } else {
+      appendEntry(cmd, renderError(cmd));
+    }
+
+    inputEl.value = '';
+    focusSoon();
+  }
+
+  // ── input handling ───────────────────────
+  inputEl?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      run(inputEl.value);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (historyCursor < history.length - 1) {
+        historyCursor++;
+        inputEl.value = history[historyCursor];
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (historyCursor > 0) {
+        historyCursor--;
+        inputEl.value = history[historyCursor];
+      } else if (historyCursor === 0) {
+        historyCursor = -1;
+        inputEl.value = '';
+      }
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      const partial = inputEl.value.trim().toLowerCase();
+      if (!partial) return;
+      const matches = COMPLETIONS.filter((c) => c.startsWith(partial));
+      if (matches.length === 1) inputEl.value = matches[0];
     }
   });
 
-  function setupClickToCopy() {
-    document.querySelectorAll('.command-name').forEach((cmd: Element) => {
-      cmd.addEventListener('click', () => {
-        const command = cmd.textContent;
-        if (command && terminalInput) {
-          terminalInput.value = command;
-          terminalInput.focus();
+  // ── click-to-run chips ───────────────────────
+  function bindRunTargets(root: ParentNode) {
+    root.querySelectorAll<HTMLElement>('[data-run]').forEach((el) => {
+      el.addEventListener('click', () => run(el.dataset.run || ''));
+      el.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          run(el.dataset.run || '');
         }
       });
     });
   }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-      setupClickToCopy();
-    }, 200);
+  bindRunTargets(heroEl);
+  entriesEl.addEventListener('click', (e) => {
+    const target = (e.target as HTMLElement).closest('[data-run]') as HTMLElement | null;
+    if (target) run(target.dataset.run || '');
   });
+  entriesEl.addEventListener('keydown', (e: KeyboardEvent) => {
+    const target = (e.target as HTMLElement).closest('[data-run]') as HTMLElement | null;
+    if (target && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      run(target.dataset.run || '');
+    }
+  });
+
+  themeToggleEl?.addEventListener('click', () => run('theme'));
+
+  // Autofocus when clicking anywhere in the shell body that isn't interactive
+  bodyEl.addEventListener('click', (e) => {
+    if (window.getSelection && String(window.getSelection())) return;
+    const target = e.target as HTMLElement;
+    if (target.closest && target.closest('a,button,input,[data-run]')) return;
+    focusSoon();
+  });
+
+  // ── theme sync with OS ───────────────────────
+  const mq = window.matchMedia('(prefers-color-scheme: light)');
+  mq.addEventListener('change', () => { if (mode === 'os') applyTheme(); });
+
+  // ── boot ───────────────────────
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  boot(reduceMotion);
 </script>
