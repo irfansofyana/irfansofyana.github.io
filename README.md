@@ -1,6 +1,6 @@
 # Terminal Portfolio Project
 
-This project is a **Terminal Portfolio** built with Astro. It provides an interactive terminal-like interface where users can navigate, explore various commands, and learn about the developer through a set of predefined commands that open different links and display information.
+This project is a **Terminal Portfolio** built with Astro. It's a CRT-style, boot-sequence terminal — complete with a phosphor-green/paper theme toggle — where visitors can type commands to learn about the developer, view skills, and jump to external links.
 
 ## 🚀 Project Structure
 
@@ -10,14 +10,16 @@ Inside of your Terminal Portfolio project, you'll see the following folders and 
 /
 ├── public/
 │   ├── favicon.svg
-│   └── profile.svg          # Profile picture
+│   ├── profile.svg          # Unused sample avatar
+│   └── ss.png                # Profile picture (referenced by profile.json)
 ├── src/
+│   ├── assets/               # Unused Astro starter assets
 │   ├── components/
-│   │   └── Terminal.astro   # Main terminal component
+│   │   └── Terminal.astro   # Terminal window, boot sequence, hero, and command logic
 │   ├── data/
 │   │   └── profile.json     # Personal data configuration
 │   ├── layouts/
-│   │   └── Layout.astro     # Base layout
+│   │   └── Layout.astro     # Base layout + design tokens (colors/type/spacing/effects)
 │   └── pages/
 │       └── index.astro      # Main page
 ├── astro.config.mjs
@@ -27,7 +29,7 @@ Inside of your Terminal Portfolio project, you'll see the following folders and 
 **Key Files to Customize:**
 - `src/data/profile.json` - Your personal information, social links, and bio
 - `src/components/Terminal.astro` - Terminal interface and command logic
-- `public/profile.svg` - Your profile picture
+- The image path set in `profile_picture` inside `src/data/profile.json` (currently `ss.png` in `public/`) - Your profile picture
 
 ## 🧞 Commands
 
@@ -57,11 +59,13 @@ All commands are run from the root of the project, from a terminal:
 
 2. **Adding/Editing Commands:**
    - Modify `src/components/Terminal.astro` to add new commands or change existing ones.
-   - Commands are defined in the JavaScript section near `executeCommand` function.
+   - Commands are handled in the `run()` function in the component's `<script>` block. Built-in commands: `help`, `about`, `whoami`, `skills`, `history`, `theme`, `boot`, `clear`, plus one command per entry in `profile.json`'s `social_links` (`resume`, `til`, `devtools`, `github`, `linkedin`, `instagram`).
+   - The input supports Tab-completion and ↑/↓ command history.
 
-3. **Styling:**
-   - Customize CSS in `src/components/Terminal.astro` to modify the terminal's appearance.
-   - Styles are defined within `<style>` tags.
+3. **Styling & Theme:**
+   - Design tokens (colors, typography, spacing, glow/motion effects) live in `src/layouts/Layout.astro`, including the `[data-theme="paper"]` overrides for the light/ink theme.
+   - Component-level styles (window chrome, hero, chips, buttons, etc.) live in `src/components/Terminal.astro`.
+   - Visitors can toggle between the CRT (dark, phosphor-green) and paper (light) themes via the `theme` command or the hero's `[ theme: ... ]` button; the choice is persisted in `localStorage` and otherwise follows the OS `prefers-color-scheme`.
 
 4. **Running and Building:**
    - Use the following npm scripts for development and production:
